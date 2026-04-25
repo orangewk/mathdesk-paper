@@ -1,0 +1,35 @@
+% Custom preamble additions injected via pandoc --include-in-header.
+% These extend the pandoc-generated preamble for arxiv submission.
+
+% --- table sizing ---------------------------------------------------------
+% The paper has many wide tables (Tables 3, 5, 6, etc.). Use a smaller font
+% inside longtable and reduce intercolumn spacing so they fit the text width.
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{\small}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{0.95}
+
+% --- page geometry --------------------------------------------------------
+% Slightly wider text block helps wide tables; arxiv accepts standard
+% article geometry but a 1in margin is comfortable for screen reading.
+\usepackage[margin=1in]{geometry}
+
+% --- xelatex font setup ---------------------------------------------------
+% The default Latin Modern font lacks several mathematical symbols (Greek
+% letters in text, ≥, ≤, ✓). preprocess.py rewrites the bare characters to
+% LaTeX commands; this block only handles a handful of remaining glyphs.
+\ifPDFTeX\else
+  \usepackage{newunicodechar}
+  \newunicodechar{→}{\ensuremath{\rightarrow}}
+  \newunicodechar{↓}{\ensuremath{\downarrow}}
+  \newunicodechar{≈}{\ensuremath{\approx}}
+  \newunicodechar{·}{\ensuremath{\cdot}}
+  \newunicodechar{×}{\ensuremath{\times}}
+  \newunicodechar{−}{\ensuremath{-}}
+\fi
+
+% --- code blocks ----------------------------------------------------------
+% pandoc emits \begin{verbatim} blocks for the prompt-text appendix; allow
+% them to break across pages and use a smaller font for long blocks.
+\usepackage{fancyvrb}
+\fvset{fontsize=\small,frame=single,framerule=0.4pt,rulecolor=\color{black!30}}

@@ -1,0 +1,11 @@
+graph LR
+    subgraph v0["v0: Embedded map"]
+        s0["Start"] --> sp["Scatter plot (default)"] --> m0["Regression to mean"]
+    end
+    subgraph v1["v1: Tool-externalized map"]
+        s1["Start"] --> tool["where_are_we"]
+        tool --> b["B-beginner: conceptual intuition"]
+        tool --> a["A-mid: deviation-based analysis"]
+        tool --> c["C-advanced: deviation products"]
+        a --> obs["Obstacle → confident ancestor"]
+    end

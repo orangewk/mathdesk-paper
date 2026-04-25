@@ -1,0 +1,12 @@
+graph TB
+    subgraph Prompt["System Prompt (standing constraints)"]
+        L1["Layer 1: Principle<br/>experience → discovery → naming"]
+        L2["Layer 2: Knowledge State<br/>acquired concept set"]
+        L3["Layer 3: Strategy Few-Shot<br/>single behavioral exemplar"]
+    end
+    L4["Layer 4: Concept Map<br/>MCP tool: where_are_we"]
+
+    Prompt -- "invokes at each turn" --> L4
+    L4 -- "returns frontier / obstacle / detour" --> Prompt
+
+    style L4 fill:#d4edda,stroke:#28a745

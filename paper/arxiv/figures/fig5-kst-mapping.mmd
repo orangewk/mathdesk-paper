@@ -1,0 +1,17 @@
+graph LR
+    subgraph Architecture["Four-Layer Architecture"]
+        L1["Layer 1: Principle"]
+        L2["Layer 2: Knowledge State"]
+        L3["Layer 3: Strategy Few-Shot"]
+        L4["Layer 4: Concept Map Tool"]
+    end
+    subgraph KST["KST Interpretation"]
+        K1["Decomposition direction<br/>(traverse upward from K toward target)"]
+        K2["Termination condition<br/>(stop when node is already in K)"]
+        K3["Traversal execution pattern<br/>(conduct each step: experience → name)"]
+        K4["Path computation<br/>(frontier, obstacle, detour from K)"]
+    end
+    L1 --- K1
+    L2 --- K2
+    L3 --- K3
+    L4 --- K4

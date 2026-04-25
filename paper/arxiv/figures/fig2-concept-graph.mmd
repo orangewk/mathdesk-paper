@@ -1,0 +1,39 @@
+graph LR
+    mean["mean<br/>(1.0)"]
+    dev["deviation<br/>(1.0)"]
+    var["variance<br/>(1.0)"]
+    std["std dev<br/>(1.0)"]
+    cov["covariance<br/>(1.0)"]
+    scatter["scatter plot<br/>(1.0)"]
+    corr["correlation coefficient<br/>(1.0)"]
+
+    neg["negative numbers<br/>(0.9)"]
+    sq["square root<br/>(0.9)"]
+    arith["arithmetic ops<br/>(0.9)"]
+    coord["coordinate plane<br/>(0.5)"]
+    exp_node["exponentiation<br/>(0.4)"]
+
+    mean --> dev
+    var --> std
+    cov --> corr
+    std --> corr
+
+    neg -.-> dev
+    arith -.-> mean
+    sq -.-> std
+    coord -.-> scatter
+    exp_node -.-> var
+
+    style mean fill:#1a7a3c,color:#fff
+    style dev fill:#1a7a3c,color:#fff
+    style var fill:#1a7a3c,color:#fff
+    style std fill:#1a7a3c,color:#fff
+    style cov fill:#1a7a3c,color:#fff
+    style scatter fill:#1a7a3c,color:#fff
+    style corr fill:#1a7a3c,color:#fff
+
+    style neg fill:#5cb85c,color:#fff
+    style sq fill:#5cb85c,color:#fff
+    style arith fill:#5cb85c,color:#fff
+    style coord fill:#f0ad4e
+    style exp_node fill:#ffffcc
