@@ -390,7 +390,7 @@ Analysis was qualitative: representative responses were evaluated on whether the
 
 ## 4.3 Experiment 3: Concept Map Delivery (Galaxy)
 
-Experiment 3 establishes that externalizing the concept map as an invocable MCP tool — rather than embedding it in the system prompt — is necessary and sufficient for profile-dependent route selection.
+Experiment 3 establishes that, in the two concept domains examined, externalizing the concept map as an invocable MCP tool — rather than embedding it in the system prompt — is what produces profile-dependent route selection: tool delivery yielded 30/30 profile-dependent paths, while prompt embedding yielded 0/5.
 
 ### 4.3.1 Concept Graph Construction
 
@@ -467,7 +467,7 @@ A post-hoc inspection of the labeled responses identified the Pattern A/B partit
 
 ## 5.2 Experiment 2 Results: Only Acquired Knowledge Affects Tutoring Paths
 
-Across 475 classified responses (effective independent replications: n=6 from Phase 2 Claude cross-model replication; see Section 4.2.3), acquired knowledge (K) was the sole knowledge state component that changed the connection path origin from generic to learner-anchored. Struggle history (S) and learning style (L) were ineffective under all conditions tested, including with dedicated few-shot exemplars.
+Across 475 classified responses (effective independent replications: n=6 from Phase 2 Claude cross-model replication; see Section 4.2.1 for the Phase 1/2/3 design), acquired knowledge (K) was the sole knowledge state component that changed the connection path origin from generic to learner-anchored. Struggle history (S) and learning style (L) were ineffective under all conditions tested, including with dedicated few-shot exemplars.
 
 ### 5.2.1 Gemini Qualitative Analysis (400 Responses)
 
@@ -1445,7 +1445,7 @@ Two responses were classified differently:
 
 ---
 
-## D.6 TBD Items
+## D.6 Outstanding items
 
 - Formal P1–P4 operationalization as measurable criteria (current rubric provides qualitative descriptions only; P5 is the only level with a reproducible positive criterion)
 - Exact sample breakdown for the 65-response re-classification event (which probes, which conditions)
