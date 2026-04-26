@@ -102,6 +102,7 @@ def patch_tex(path: Path):
     subs = [
         ("≥", r"$\geq$"),       # ≥
         ("≤", r"$\leq$"),       # ≤
+        ("≠", r"$\neq$"),       # ≠
         ("κ", r"$\kappa$"),     # κ
         ("β", r"$\beta$"),      # β
         ("✓", r"\\checkmark"),  # ✓

@@ -958,6 +958,24 @@ The limitations above define four priorities, ordered by what must be establishe
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\subsection{6.5 Implications and Misreadings to Avoid}\label{65-implications-and-misreadings-to-avoid}
+
+The architectural validation reported here reframes the problem of LLM mathematics tutoring. The dominant question in the field has been whether models possess sufficient mathematical competence to teach --- a knowledge question. The results above suggest the question to ask next is different: given that competence is sufficient, \emph{how is the deployment of that competence governed for a specific learner}. That is a control question, not a knowledge question, and the four-layer architecture is a proposal for what such control infrastructure looks like. KST contributes the formal vocabulary in which the control target --- the learner\textquotesingle s knowledge state --- can be specified; the strategy few-shot and the externalized concept map together translate that specification into operational tutoring behavior.
+
+Three readings of these results would extend beyond what the data support, and we name them here so subsequent work can avoid them:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{30/30 $\neq$ deployment-readiness.} The Galaxy success rates characterize mechanism function under controlled conditions --- a fixed pair of concept domains, three constructed profiles, frontier-tier models, no learner involved in the runs. Whether the same architecture sustains route selection over diverse human learners across weeks of authentic tutoring is a separate empirical question, identified as Priority 1.
+\item
+  \textbf{K-only $\neq$ "learner modeling is simple".} The H1 ablation showed that struggle indicators (S) and learning-style annotations (L) had no behavioral effect \emph{on route selection under the conditions tested}. This finding does not warrant abandoning struggle and style modeling for downstream concerns outside route selection --- emotional support during impasse, accessibility accommodations, or motivation maintenance over a long study session. The architecture\textquotesingle s claim is narrower than "K is the only learner model component that matters".
+\item
+  \textbf{Lateral-movement-removed $\neq$ pedagogy-solved.} The architecture demonstrably removes one specific failure mode: depth-stable rephrasing in response to a comprehension signal. The pedagogical quality of the route the architecture chooses --- whether the reformulation it descends to actually produces understanding for a particular learner --- is the next-layer question, and it is outside the evidence reported here. The contribution is a control mechanism, not an instructional method.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
 \subsection{References (Section 6)}\label{references-section-6}
 
 \begin{itemize}
