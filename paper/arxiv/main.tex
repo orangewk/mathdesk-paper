@@ -252,7 +252,7 @@ MathNet (Alshammari et al., 2026) and MathTutorBench (Macina et al., 2025) opera
 
 \paragraph{Knowledge Tracing}\label{knowledge-tracing}
 
-The knowledge tracing literature --- from Bayesian Knowledge Tracing (Corbett \& Anderson, 1994) through deep knowledge tracing (Piech et al., 2015) and LLM-augmented variants (2T-KT, 2025) --- is relevant as prior art on learner state representation but differs from the knowledge state layer in two respects. Knowledge tracing targets \emph{procedural skill mastery} --- whether the learner can execute a procedure correctly. The knowledge state layer targets \emph{conceptual acquisition} --- which concepts the learner has reconstructed and internalized. Additionally, knowledge tracing is retrospective, estimating what the learner knows from past performance; the knowledge state here is populated through qualitative tutor observation, making it prospective.
+The knowledge tracing literature --- from Bayesian Knowledge Tracing (Corbett \& Anderson, 1994) through deep knowledge tracing (Piech et al., 2015) and LLM-augmented variants (Li et al., 2026) --- is relevant as prior art on learner state representation but differs from the knowledge state layer in two respects. Knowledge tracing targets \emph{procedural skill mastery} --- whether the learner can execute a procedure correctly. The knowledge state layer targets \emph{conceptual acquisition} --- which concepts the learner has reconstructed and internalized. Additionally, knowledge tracing is retrospective, estimating what the learner knows from past performance; the knowledge state here is populated through qualitative tutor observation, making it prospective.
 
 \paragraph{Socratic Tutoring Systems}\label{socratic-tutoring-systems}
 
@@ -351,7 +351,7 @@ The current implementation requires manual initialization; automatic estimation 
 
 \subsection{3.4 Layer 3: The Strategy Few-Shot}\label{34-layer-3-the-strategy-few-shot}
 
-The strategy few-shot layer specifies the target teaching pattern as a concise pedagogical-pattern rule. The term \emph{few-shot} is retained because the pattern was arrived at through demonstrative exemplars, but in the final C2 implementation it is an abstract rule rather than a full tutor--learner dialogue. The layer functions as a behavioral \emph{activation pattern}, not a procedural manual. The complete system prompt used in the experiments --- including the principle layer text and the strategy rule --- is reproduced in Appendix C.
+The strategy few-shot layer specifies the target teaching pattern as a concise pedagogical-pattern rule. The term \emph{few-shot} is retained because the pattern was arrived at through demonstrative exemplars, but in the final C2 implementation it is an abstract rule rather than a full tutor--learner dialogue. The layer functions as a behavioral \emph{activation pattern}, not a procedural manual. The complete system prompt used in the experiments --- including the principle layer text and the strategy rule --- is reproduced in Appendix B.
 
 Early formulations (Experiment 6, Section 4.1) used a concrete exchange from factoring instruction; in the final configuration this is compressed to:
 
@@ -392,7 +392,7 @@ The concept map is provided as an external MCP tool rather than embedded in the 
   \textbf{Detour} --- if an obstacle is detected, a path back to a confident node for re-experience.
 \end{itemize}
 
-A \emph{surveyor} sub-agent converts the tutor\textquotesingle s observation into node-level status estimates; a deterministic graph step produces frontier, obstacle, and detour outputs. The full tool schema, surveyor configuration, and graph algorithms are documented in Appendix D.
+A \emph{surveyor} sub-agent converts the tutor\textquotesingle s observation into node-level status estimates; a deterministic graph step produces frontier, obstacle, and detour outputs. The full tool schema, surveyor configuration, and graph algorithms are documented in Appendix C.
 
 \textbf{Embedding vs. tool.} In Galaxy v0, the map was embedded as JSON in the system prompt. All five runs ignored it and followed the same default route. In v1, provided as \texttt{where\_are\_we}, the tutor called the tool at each turn and produced profile-dependent paths across all three profiles (15/15). Replication on factorization confirmed generalization (9/9 profile-dependent routes, 3/3 obstacle detections). The mechanism reflects a general property: embedded text may be bypassed; tool invocation creates an explicit retrieval event the model incorporates.
 
@@ -585,7 +585,7 @@ ID & Research Question & N & Probe(s) & Outcome \\
 \end{longtable}
 }
 
-\textbf{Controls and classification.} We enforced temperature=0, Fisher-Yates shuffle of few-shot component order, and exponential backoff retry logic. We classified each response by the first substantive tutor move: \emph{Experience} (calculation, diagram, or substitution request), \emph{Confirmation} (probing existing knowledge), or \emph{Explanation} (passive concept presentation). Inter-rater agreement was $\kappa$=0.831; the full P1--P5 HIL quality rubric, the three-category response classifier, the labeling procedure, and the 65-item re-classification log are documented in Appendix E. A post-hoc re-classification of the same 65 items changed 22 labels (34\%), revising the Full condition experience rate from 95\% to 55\%.
+\textbf{Controls and classification.} We enforced temperature=0, Fisher-Yates shuffle of few-shot component order, and exponential backoff retry logic. We classified each response by the first substantive tutor move: \emph{Experience} (calculation, diagram, or substitution request), \emph{Confirmation} (probing existing knowledge), or \emph{Explanation} (passive concept presentation). Inter-rater agreement was $\kappa$=0.831; the full P1--P5 HIL quality rubric, the three-category response classifier, the labeling procedure, and the 65-item re-classification log are documented in Appendix D. A post-hoc re-classification of the same 65 items changed 22 labels (34\%), revising the Full condition experience rate from 95\% to 55\%.
 
 \textbf{Model comparison and domain transfer.} Sub-experiment 10 crossed three models (Gemini 2.5 Flash, Gemini 2.5 Pro, Claude Opus 4.6) with three prompt conditions (principle only, principle + knowledge state, full); results are reported in Section 5.1.1 (Table 9). The algebra few-shot applied without modification to P-stat and P-geom produced discovery-first behavior in both domains (Section 5.1).
 
@@ -1010,7 +1010,7 @@ Controlling how an LLM teaches is a prerequisite to making AI tutoring effective
 
 \subsection{Data and Code Availability}\label{data-and-code-availability}
 
-The strategy few-shot prompt (Appendix C), the \texttt{where\_are\_we} tool schema and surveyor configuration (Appendix D), the HIL labeling rubric (Appendix E), and the integrated reference list are included with this paper. The concept graph used in Experiments 1 and 3, the experiment scripts, and the raw conversation logs are maintained in a project repository; the public location and persistent identifier are listed at the URL provided in the camera-ready version. For the review version, materials beyond those reproduced in the appendices are available from the corresponding author on request, subject to anonymity preservation. All artifacts will be deposited under a permissive license at the time of publication.
+The strategy few-shot prompt (Appendix B), the \texttt{where\_are\_we} tool schema and surveyor configuration (Appendix C), the HIL labeling rubric (Appendix D), and the integrated reference list are included with this paper. The concept graph used in Experiments 1 and 3, the experiment scripts, and the raw conversation logs are maintained in a project repository; the public location and persistent identifier are listed at the URL provided in the camera-ready version. For the review version, materials beyond those reproduced in the appendices are available from the corresponding author on request, subject to anonymity preservation. All artifacts will be deposited under a permissive license at the time of publication.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -1056,73 +1056,7 @@ van den Heuvel-Panhuizen, M., \& Drijvers, P. (2014). Realistic Mathematics Educ
 
 Yang, T., Ren, B., Gu, C., He, T., Ma, B., \& Konomi, S. (2025). Leveraging LLMs for Automated Extraction and Structuring of Educational Concepts and Relationships. \emph{Machine Learning and Knowledge Extraction}, 7(3), 103. \url{https://doi.org/10.3390/make7030103}. {[}DOI to be confirmed at the MDPI MAKE article page before submission.{]}
 
-{[}2T-KT{]} (2025). Thinking As a Teacher: LLM Supporting Knowledge Tracing Leveraging Global Subject and Student Specific Knowledge Graphs. \emph{Information Fusion} (Elsevier). ScienceDirect PII: S1566253525006499. {[}TBD: full author list and DOI --- paper title and journal venue are confirmed via the public implementation repository (github.com/linqingliDestinyController/2T-KT-model) and the ScienceDirect listing (\url{https://www.sciencedirect.com/science/article/abs/pii/S1566253525006499}), but the full author list and DOI could not be retrieved without journal access{]}.
-
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
-\subsection{Extraction notes}\label{extraction-notes}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Total citations extracted from body text:} 21 distinct citation keys
-\item
-  \textbf{Bibliographic details confirmed from existing section References:} 8
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Bruner (1966), Cohen (1988), Doignon \& Falmagne (1999), Freudenthal (1991), Gravemeijer (1994), Landis \& Koch (1977), Piech et al. (2015), van den Heuvel-Panhuizen \& Drijvers (2014)
-  \end{itemize}
-\item
-  \textbf{Verified via web search on 2026-04-24/25:} 11
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Alshammari et al. (2026) --- MathNet, ICLR 2026 (arXiv:2604.18584)
-  \item
-    Bastani et al. (2025) --- PNAS 122(26), e2422633122 (DOI confirmed)
-  \item
-    de Paiva, Gao, Kovalev, \& Moss (2023) --- arXiv:2309.00642, MathUI/CICM 2023
-  \item
-    Falmagne et al. (2006) --- LNCS 3874, pp. 61--79, ICFCA 2006 (Missaoui \& Schmidt eds.)
-  \item
-    Jiang et al. (2025) --- MAS-KCL, \emph{The Visual Computer} / CGI 2025 (arXiv:2505.14126)
-  \item
-    Liu, J. et al. (2024) --- SocraticLM, NeurIPS 2024 Spotlight
-  \item
-    Liu, Y. et al. (2025) --- GuideEval, arXiv:2508.06583
-  \item
-    Macina et al. (2025) --- MathTutorBench, EMNLP 2025 main, pp. 204--221 (arXiv:2502.18940)
-  \item
-    Skycak \& Roberts (2023) --- verified URL; remains non-peer-reviewed working draft
-  \item
-    Toeplitz (1963) --- original German Springer 1949 vol. 56 (Grundlehren) confirmed
-  \item
-    Yang et al. (2025) --- \emph{Machine Learning and Knowledge Extraction} 7(3):103 (MDPI), replacing the unverifiable Giabbanelli (2025) citation
-  \end{itemize}
-\item
-  \textbf{TBD remaining (could not verify):} 1
-
-  \begin{itemize}
-  \tightlist
-  \item
-    2T-KT (2025) --- title and journal (\emph{Information Fusion}) confirmed via GitHub implementation repo and ScienceDirect listing (PII S1566253525006499); full author list could not be retrieved
-  \end{itemize}
-\end{itemize}
-
-\subsubsection{Disambiguation note}\label{disambiguation-note}
-
-Two distinct Liu et al. citations appear in the text and are confirmed to be different author groups:
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Liu et al. (2024)} = SocraticLM (Section 2.2, Socratic Tutoring) --- first author \textbf{Jiayu Liu} (USTC group, Huang/Chen et al.)
-\item
-  \textbf{Liu et al. (2025)} = GuideEval (Sections 1, 2.2, 3.2, 6.2, 7) --- first author \textbf{Ying Liu} (different research group; Hua Huang et al.)
-\end{itemize}
+Li, L., Wang, Z., Jose, J. M., \& Ge, X. (2026). LLM supporting knowledge tracing leveraging global subject and student specific knowledge graphs. \emph{Information Fusion}, 126(A), 103577. \url{https://doi.org/10.1016/j.inffus.2025.103577}.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -1168,13 +1102,13 @@ Term & Definition \\
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\section{Appendix C. Strategy Few-Shot Layer --- Actual Prompt Text}\label{appendix-c-strategy-few-shot-layer--actual-prompt-text}
+\section{Appendix B. Strategy Few-Shot Layer --- Actual Prompt Text}\label{appendix-b-strategy-few-shot-layer--actual-prompt-text}
 
 \emph{This appendix supplements §3.4 (Layer 3: The Strategy Few-Shot). The text below is the full content of the strategy few-shot component as deployed in the C2 configuration, anonymized for review.}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{C.1 Relationship to the Paper}\label{c1-relationship-to-the-paper}
+\subsection{B.1 Relationship to the Paper}\label{b1-relationship-to-the-paper}
 
 Section 3.4 describes the strategy few-shot as "a concise pedagogical-pattern rule" that "functions as a behavioral activation pattern, not a procedural manual." This appendix reproduces the actual prompt text so that the claim --- that one abstract rule suffices --- can be directly verified.
 
@@ -1182,7 +1116,7 @@ The rule occupies approximately 40 of the \textasciitilde80 total system-prompt 
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{C.2 System Prompt Structure}\label{c2-system-prompt-structure}
+\subsection{B.2 System Prompt Structure}\label{b2-system-prompt-structure}
 
 The C2 system prompt is assembled from three components in the following order:
 
@@ -1201,7 +1135,7 @@ Components 1 and 3 are separated in the codebase to allow independent versioning
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{C.3 Character and Output Constraint Block}\label{c3-character-and-output-constraint-block}
+\subsection{B.3 Character and Output Constraint Block}\label{b3-character-and-output-constraint-block}
 
 \begin{verbatim}
 # Role
@@ -1235,7 +1169,7 @@ The ultimate goal is for the learner to be able to solve problems on their own.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{C.4 Principle Layer (Layer 1)}\label{c4-principle-layer-layer-1}
+\subsection{B.4 Principle Layer (Layer 1)}\label{b4-principle-layer-layer-1}
 
 \begin{verbatim}
 ## Educational Principles
@@ -1270,7 +1204,7 @@ Do not present the solution method first.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{C.5 Output Constraint Block (Continued in Principle Layer)}\label{c5-output-constraint-block-continued-in-principle-layer}
+\subsection{B.5 Output Constraint Block (Continued in Principle Layer)}\label{b5-output-constraint-block-continued-in-principle-layer}
 
 \begin{verbatim}
 ## Output Constraints
@@ -1319,7 +1253,7 @@ Do not call it for listening to explanations or saying "I understand" alone.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{C.6 Concept Map Navigation Block (Layer 4 Integration)}\label{c6-concept-map-navigation-block-layer-4-integration}
+\subsection{B.6 Concept Map Navigation Block (Layer 4 Integration)}\label{b6-concept-map-navigation-block-layer-4-integration}
 
 The following block connects Layer 1 (principle) to Layer 4 (concept map tool). It specifies \emph{when} and \emph{how} to invoke \texttt{where\_are\_we}:
 
@@ -1355,7 +1289,7 @@ Do not present the solution method first.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{C.7 Anonymization Notes}\label{c7-anonymization-notes}
+\subsection{B.7 Anonymization Notes}\label{b7-anonymization-notes}
 
 The following elements were removed or generalized:
 
@@ -1374,11 +1308,11 @@ Model names referenced in comments & omitted \\
 \end{longtable}
 }
 
-Character definition (persona name, age, gender) was removed as it is a product-specific branding element unrelated to the architectural claim. The pedagogical logic --- the three-step rule in §C.4 and the navigation block in §C.6 --- is reproduced verbatim (translated from Japanese).
+Character definition (persona name, age, gender) was removed as it is a product-specific branding element unrelated to the architectural claim. The pedagogical logic --- the three-step rule in §B.4 and the navigation block in §B.6 --- is reproduced verbatim (translated from Japanese).
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{C.8 Line Count}\label{c8-line-count}
+\subsection{B.8 Line Count}\label{b8-line-count}
 
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.465\linewidth}>{\raggedright\arraybackslash}p{0.465\linewidth}@{}}
@@ -1388,25 +1322,25 @@ Block & Lines (approx.) \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Character / output constraints (§C.3) & \textasciitilde25 \\
-Principle layer / learning sequence (§C.4) & \textasciitilde20 \\
-Output constraints continued (§C.5) & \textasciitilde25 \\
-Concept map navigation (§C.6, C2 variant) & \textasciitilde20 \\
+Character / output constraints (§B.3) & \textasciitilde25 \\
+Principle layer / learning sequence (§B.4) & \textasciitilde20 \\
+Output constraints continued (§B.5) & \textasciitilde25 \\
+Concept map navigation (§B.6, C2 variant) & \textasciitilde20 \\
 \textbf{Total} & \textbf{\textasciitilde90} \\
 \end{longtable}
 }
 
-The count slightly exceeds the "\textasciitilde80 lines" cited in §3.2 because §C.5 includes visual-expression constraints not counted in the §3.2 estimate. The pedagogically load-bearing text (§C.4, principle + learning sequence) occupies approximately 20 lines; the remainder is formatting and tool-call protocol.
+The count slightly exceeds the "\textasciitilde80 lines" cited in §3.2 because §B.5 includes visual-expression constraints not counted in the §3.2 estimate. The pedagogically load-bearing text (§B.4, principle + learning sequence) occupies approximately 20 lines; the remainder is formatting and tool-call protocol.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\section{\texorpdfstring{Appendix D. Surveyor (\texttt{where\_are\_we}) --- Technical Specification}{Appendix D. Surveyor (where\_are\_we) --- Technical Specification}}\label{appendix-d-surveyor-where_are_we--technical-specification}
+\section{\texorpdfstring{Appendix C. Surveyor (\texttt{where\_are\_we}) --- Technical Specification}{Appendix C. Surveyor (where\_are\_we) --- Technical Specification}}\label{appendix-c-surveyor-where_are_we--technical-specification}
 
 \emph{This appendix supplements §3.5 (Layer 4: The Concept Map as an External Tool) and §3.6 (Concept Graph Construction). It provides the full tool interface, algorithmic detail, and sub-agent configuration for \texttt{where\_are\_we}, the MCP tool at the core of the concept map layer.}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{D.1 Overview}\label{d1-overview}
+\subsection{C.1 Overview}\label{c1-overview}
 
 \texttt{where\_are\_we} is an MCP (Model Context Protocol) tool that:
 
@@ -1427,7 +1361,7 @@ The Surveyor is the only non-deterministic component. All graph calculations (fr
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{D.2 Tool Interface}\label{d2-tool-interface}
+\subsection{C.2 Tool Interface}\label{c2-tool-interface}
 
 \subsubsection{Input Schema}\label{input-schema}
 
@@ -1485,7 +1419,7 @@ The tool returns a JSON object with the following structure:
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{D.3 Concept Node Representation}\label{d3-concept-node-representation}
+\subsection{C.3 Concept Node Representation}\label{c3-concept-node-representation}
 
 Each concept node in the knowledge graph carries an acquisition value:
 
@@ -1515,7 +1449,7 @@ unknown   : value < 0.4
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{D.4 Surveyor Sub-Agent}\label{d4-surveyor-sub-agent}
+\subsection{C.4 Surveyor Sub-Agent}\label{c4-surveyor-sub-agent}
 
 The Surveyor is a dedicated LLM call that converts the tutor\textquotesingle s natural-language observation into a list of per-node acquisition estimates.
 
@@ -1575,7 +1509,7 @@ The Surveyor is invoked via \texttt{runClaude(prompt)}, which spawns a child pro
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{D.5 Knowledge State Record (Persistent Storage)}\label{d5-knowledge-state-record-persistent-storage}
+\subsection{C.5 Knowledge State Record (Persistent Storage)}\label{c5-knowledge-state-record-persistent-storage}
 
 Between Surveyor calls, node acquisition values are persisted in a local JSON file. The implementation file name and tool identifiers retain the legacy term \texttt{karte} for the storage object; this is an implementation detail and the operational concept is the knowledge state defined in §3.3.
 
@@ -1606,7 +1540,7 @@ Maximum decay is capped at 30\% regardless of elapsed time.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{D.6 computeTerrain Algorithm}\label{d6-computeterrain-algorithm}
+\subsection{C.6 computeTerrain Algorithm}\label{c6-computeterrain-algorithm}
 
 \texttt{computeTerrain} is called after every knowledge state record update. It is fully deterministic.
 
@@ -1670,7 +1604,7 @@ Fog represents how much of the concept graph remains inaccessible. A fuzzy node 
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{D.7 Additional Tools}\label{d7-additional-tools}
+\subsection{C.7 Additional Tools}\label{c7-additional-tools}
 
 The MCP server exposes three additional tools alongside \texttt{where\_are\_we}:
 
@@ -1690,7 +1624,7 @@ Tool & Purpose \\
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{D.8 Anonymization Notes}\label{d8-anonymization-notes}
+\subsection{C.8 Anonymization Notes}\label{c8-anonymization-notes}
 
 The following elements were removed:
 
@@ -1712,13 +1646,13 @@ The tool name \texttt{where\_are\_we}, the Surveyor prompt logic, all threshold 
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\section{Appendix E. HIL Rubric --- Tutor Response Classification}\label{appendix-e-hil-rubric--tutor-response-classification}
+\section{Appendix D. HIL Rubric --- Tutor Response Classification}\label{appendix-d-hil-rubric--tutor-response-classification}
 
 \emph{This appendix supplements §4.1 (Experiment 1: Control Layer Stability) and §4.2 (Experiment 2: Knowledge State Ablation). It provides the full operational definitions, decision procedure, and inter-rater validation details for the five-level quality rubric (P1--P5) and the three-category response classification (Experience / Confirmation / Explanation) used throughout the experimental program.}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{E.1 Two Classification Instruments}\label{e1-two-classification-instruments}
+\subsection{D.1 Two Classification Instruments}\label{d1-two-classification-instruments}
 
 The experimental program used two distinct classification instruments:
 
@@ -1735,7 +1669,7 @@ The P1--P5 rubric motivated the research direction; the three-category classifie
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{E.2 Five-Point HIL Quality Rubric (P1--P5)}\label{e2-five-point-hil-quality-rubric-p1p5}
+\subsection{D.2 Five-Point HIL Quality Rubric (P1--P5)}\label{d2-five-point-hil-quality-rubric-p1p5}
 
 \subsubsection{Background}\label{background}
 
@@ -1792,7 +1726,7 @@ This observation is the direct origin of the Knowledge State layer (§3.3) and t
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{E.3 Three-Category Response Classifier}\label{e3-three-category-response-classifier}
+\subsection{D.3 Three-Category Response Classifier}\label{d3-three-category-response-classifier}
 
 \subsubsection{Operational Definitions}\label{operational-definitions}
 
@@ -1912,7 +1846,7 @@ Response & Classification & Rationale \\
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{E.4 Inter-Rater Agreement}\label{e4-inter-rater-agreement}
+\subsection{D.4 Inter-Rater Agreement}\label{d4-inter-rater-agreement}
 
 \subsubsection{Study Design}\label{study-design}
 
@@ -1983,7 +1917,7 @@ Two responses were classified differently:
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{E.5 Sample Size and Labeling Protocol}\label{e5-sample-size-and-labeling-protocol}
+\subsection{D.5 Sample Size and Labeling Protocol}\label{d5-sample-size-and-labeling-protocol}
 
 \subsubsection{H1 Ablation Study (Experiment 2)}\label{h1-ablation-study-experiment-2}
 
@@ -2019,13 +1953,13 @@ Conditions & Full (principle + knowledge state + strategy few-shot) vs. None (kn
 Probes & P6, P5, P-stat, P-geom (5 replicates × 4 probes × 2 conditions) \\
 Temperature & 0 (deterministic sampling) \\
 Shuffle control & Fisher-Yates randomization of few-shot component order \\
-Inter-rater agreement & $\kappa$ = 0.831 on 20-response sample (see §E.4) \\
+Inter-rater agreement & $\kappa$ = 0.831 on 20-response sample (see §D.4) \\
 \end{longtable}
 }
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{E.6 TBD Items}\label{e6-tbd-items}
+\subsection{D.6 TBD Items}\label{d6-tbd-items}
 
 \begin{itemize}
 \tightlist
@@ -2034,7 +1968,7 @@ Inter-rater agreement & $\kappa$ = 0.831 on 20-response sample (see §E.4) \\
 \item
   Exact sample breakdown for the 65-response re-classification event (which probes, which conditions)
 \item
-  Third-rater validation of the two disagreement cases in §E.4
+  Third-rater validation of the two disagreement cases in §D.4
 \end{itemize}
 
 \end{document}
