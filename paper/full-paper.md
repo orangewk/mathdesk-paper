@@ -3,7 +3,7 @@
 ---
 
 # Abstract
-LLM mathematics tutors exhibit a documented failure mode: when a learner signals non-comprehension, models reformulate explanations at the same conceptual depth — *lateral movement* — rather than descending to the learner's existing knowledge. We present a four-layer control architecture that addresses this failure by making the learner's acquired concept set the operational input that determines teaching path selection. The four layers are: (1) a *principle layer* encoding a discovery-first pedagogical sequence drawn from Freudenthal's Guided Reinvention; (2) a *knowledge state layer* representing the learner's acquired concepts as a node subset on a prerequisite graph, in the sense of *Knowledge Space Theory* (KST), a formal framework that models learner knowledge as subsets of a domain's concept set; (3) a *strategy few-shot layer* providing a single transferable behavior-activation rule; and (4) a *concept map layer* externalized as a callable tool rather than embedded in the prompt. We report three experiments. C2 (55 runs) established that the three-layer prompt configuration produces stable discovery-first behavior across algebra, statistics, geometry, and number theory. H1 (475 runs across two model families) demonstrated through ablation that only the acquired-knowledge component affects tutoring paths; struggle indicators and learning-style annotations were ineffective. Galaxy (30 runs plus baseline) showed that externalizing the concept map as a Model Context Protocol (MCP) tool — a JSON-RPC interface that lets the model query the map at decision points rather than reading it from the prompt — causes profile-dependent route selection and obstacle detection (30/30 vs. 5/5 default routes). The contribution is a system-level validation of the control mechanism, not a learning-outcomes evaluation; the reported rates characterize mechanism function, not deployment reliability. Effectiveness measurement is identified as the principal next step.
+LLM mathematics tutors exhibit a documented failure mode: when a learner signals non-comprehension, models reformulate explanations at the same conceptual depth — *lateral movement* — rather than descending to the learner's existing knowledge. We present a four-layer control architecture that addresses this failure by making the learner's acquired concept set the operational input that determines teaching path selection. The four layers are: (1) a *principle layer* encoding a discovery-first pedagogical sequence drawn from Freudenthal's Guided Reinvention; (2) a *knowledge state layer* representing the learner's acquired concepts as a node subset on a prerequisite graph, in the sense of *Knowledge Space Theory* (KST), a formal framework that models learner knowledge as subsets of a domain's concept set; (3) a *strategy few-shot layer* providing a single transferable behavior-activation rule; and (4) a *concept map layer* externalized as a callable tool rather than embedded in the prompt. We report three experiments. C2 (55 runs) established that the three-layer prompt configuration produces stable discovery-first behavior in 5/5 temperature-zero replicates across algebra, statistics, geometry, and number theory. H1 (475 runs across two model families) demonstrated through ablation that only the acquired-knowledge component affects tutoring paths (5/5 K-containing conditions referenced the target concept on the diagnostic probe versus 0/5 for non-K conditions); struggle indicators and learning-style annotations were ineffective. Galaxy (30 runs plus baseline) showed that externalizing the concept map as a Model Context Protocol (MCP) tool — a JSON-RPC interface that lets the model query the map at decision points rather than reading it from the prompt — causes profile-dependent route selection and obstacle detection (30/30 vs. 5/5 default routes). The contribution is a system-level validation of the control mechanism, not a learning-outcomes evaluation; the reported rates characterize mechanism function, not deployment reliability. Effectiveness measurement is identified as the principal next step.
 
 **Keywords:** AI tutoring, LLM mathematics education, knowledge space theory, guided reinvention, control architecture, concept graph, model context protocol
 
@@ -150,7 +150,7 @@ Four prior lines of work each approach this gap without closing it.
 
 Bastani et al. (2025) established that control is necessary, but the GPT Tutor variant provides only a behavioral constraint (hint-only) rather than a route-selection mechanism based on learner state.
 
-SocraticLM (Liu et al., 2024) and Khanmigo provide adaptive questioning sequences oriented toward correct-answer elicitation; neither represents the learner's acquired concept set or queries a prerequisite graph to determine which concepts are accessible from the current knowledge state.
+SocraticLM (Liu et al., 2024) and Khanmigo provide adaptive questioning sequences oriented toward correct-answer elicitation; neither represents the learner's knowledge state or queries a prerequisite graph to determine which concepts are accessible from it.
 
 MAS-KCL (Jiang et al., 2025) constructs prerequisite graphs and uses them for learning-path recognition, but does not connect the graph to a tutoring control layer or use it to select a teaching route based on individual learner state.
 
@@ -199,7 +199,7 @@ The knowledge state layer represents the learner's acquired concept set as the t
 
 > Acquired concepts: four arithmetic operations, negative numbers, mean, deviation, variables, coordinate plane, exponentiation, square root.
 
-The decision to populate the knowledge state with the acquired-concept set K *alone* was validated by the H1 ablation study (Section 4.2), which compared three candidate components across 475 runs (400 Gemini, 75 Claude):
+The decision to populate the knowledge state with K *alone* (i.e., acquired concepts only, omitting struggle and style metadata) was validated by the H1 ablation study (Section 4.2), which compared three candidate components across 475 runs (400 Gemini, 75 Claude):
 
 - **K** — acquired knowledge; **S** — struggle history; **L** — learning style
 
@@ -411,7 +411,7 @@ Conditions C0 and C1 enumerated behavioral instructions with increasing detail. 
 
 **Controls and classification.** We enforced temperature=0, Fisher-Yates shuffle of few-shot component order, and exponential backoff retry logic. We classified each response by the first substantive tutor move: *Experience* (calculation, diagram, or substitution request), *Confirmation* (probing existing knowledge), or *Explanation* (passive concept presentation). Inter-rater agreement was κ=0.831; the full P1–P5 HIL quality rubric, the three-category response classifier, the labeling procedure, and the 65-item re-classification log are documented in Appendix D. A post-hoc re-classification of the same 65 items changed 22 labels (34%), revising the Full condition experience rate from 95% to 55%.
 
-**Model comparison and domain transfer.** Sub-experiment 10 crossed three models (Gemini 2.5 Flash, Gemini 2.5 Pro, Claude Opus 4.6) with three prompt conditions (principle only, principle + knowledge state, full); results are reported in Section 5.1.1 (Table 9). The algebra few-shot applied without modification to P-stat and P-geom produced discovery-first behavior in both domains (Section 5.1).
+**Model comparison and domain transfer.** Sub-experiment 10 crossed three models (Gemini 2.5 Flash, Gemini 2.5 Pro, Claude Opus 4.6) with three prompt conditions (principle only, principle + knowledge state, full); results are reported in Section 5.1.1 (Table 8). The algebra few-shot applied without modification to P-stat and P-geom produced discovery-first behavior in both domains (Section 5.1).
 
 ---
 
@@ -423,7 +423,7 @@ Experiment 2 isolates which component of the learner model drives the teaching-p
 
 Five ablation conditions were constructed for a single learner profile (a secondary-school student learning correlation coefficient).
 
-**Table 7. H1 Ablation Conditions**
+**Table 6. H1 Ablation Conditions**
 
 | Condition | K (acquired knowledge) | S (struggle history) | L (learning style) |
 |-----------|:---------------------:|:-------------------:|:-----------------:|
@@ -461,7 +461,7 @@ Concept graphs for two topics were constructed via the multi-model union method 
 
 **Learner profiles.** Three profiles were defined for each topic.
 
-**Table 8. Galaxy Learner Profiles**
+**Table 7. Galaxy Learner Profiles**
 
 | Profile | Acquired nodes (correlation) | Acquired nodes (factoring) | Description |
 |---------|------------------------------|---------------------------|-------------|
@@ -485,7 +485,7 @@ Three-layer prompt control (Principle + Knowledge State + Strategy Few-Shot) rel
 
 ### 5.1.1 Model Capability Threshold
 
-Table 9 summarizes model behavior across three prompt conditions on the factor theorem probe (P6).
+Table 8 summarizes model behavior across three prompt conditions on the factor theorem probe (P6).
 
 | Model | C2-only | C2 + Knowledge State | C2 + Knowledge State + Few-Shot |
 |-------|---------|---------------------|--------------------------------|
@@ -493,7 +493,7 @@ Table 9 summarizes model behavior across three prompt conditions on the factor t
 | Gemini 2.5 Pro | Substitution | Substitution | Common-factor grouping (desired) |
 | Claude Opus 4.6 | — | Unstable | Common-factor grouping (desired) |
 
-**Table 9.** Model × condition response on the factor theorem probe. Flash < threshold ≤ Pro ≤ Opus.
+**Table 8.** Model × condition response on the factor theorem probe. Flash < threshold ≤ Pro ≤ Opus.
 
 ### 5.1.2 Stability at Pro Level
 
@@ -518,7 +518,7 @@ A post-hoc inspection of the labeled responses identified the Pattern A/B partit
 | A — probe structure induces operation | P6 (factor theorem), P-geom (congruence) | 10/10 experience | 7/10 experience | Problem structure alone elicits operational response; knowledge state adds no routing increment |
 | B — knowledge state required to prevent regression | P5 (parity, turn 13), P-stat (correlation, turn 1) | Knowledge-origin connection path | Generic analogy (temperature × ice cream sales) | Without K, tutor defaults to daily-life analogy unanchored in learner's concept set |
 
-**Table 10.** Pattern A/B decomposition (exploratory, post-hoc). Across the four-probe sample, Cohen's h = 0.30 averages near-zero (Pattern A) and qualitatively distinct (Pattern B) effects. The primary observation is the difference in connection path origin: K-containing conditions routed through covariance; None used a generic analogy. Treated here as an exploratory partition pending pre-registered replication.
+**Table 9.** Pattern A/B decomposition (exploratory, post-hoc). Across the four-probe sample, Cohen's h = 0.30 averages near-zero (Pattern A) and qualitatively distinct (Pattern B) effects. The primary observation is the difference in connection path origin: K-containing conditions routed through covariance; None used a generic analogy. Treated here as an exploratory partition pending pre-registered replication.
 
 ---
 
@@ -538,7 +538,7 @@ Phase 1 used temperature=0 (one effective replication per condition × probe cel
 | L-only | Generic | Temperature × ice cream sales analogy |
 | None | Generic | Temperature × ice cream sales analogy |
 
-**Table 11.** P-stat condition × connection path origin. K-only referenced covariance explicitly; Full used it through a concrete task. S-only, L-only, and None converged on the same generic analogy across all four probes.
+**Table 10.** P-stat condition × connection path origin. K-only referenced covariance explicitly; Full used it through a concrete task. S-only, L-only, and None converged on the same generic analogy across all four probes.
 
 ### 5.2.2 Claude Cross-Model Replication (30 Responses)
 
@@ -548,7 +548,7 @@ The Gemini P-stat finding replicated with a different model family: Full and K-o
 |---|---|---|---|---|---|
 | Covariance reference rate (out of 5) | 5 | 5 | 0 | 0 | 0 |
 
-**Table 12.** Covariance reference rate by condition (P-stat), Claude cross-model replication. K-containing conditions: 5/5 covariance references; all non-K conditions: 0/5. The K-effect held across Gemini (Phase 1) and Claude (Phase 2).
+**Table 11.** Covariance reference rate by condition (P-stat), Claude cross-model replication. K-containing conditions: 5/5 covariance references; all non-K conditions: 0/5. The K-effect held across Gemini (Phase 1) and Claude (Phase 2).
 
 ### 5.2.3 S/L Few-Shot Experiment (25 Responses)
 
@@ -582,7 +582,7 @@ The tutor called `where_are_we` on Turn 1 in all 15 correlation-coefficient runs
 | A-mid (8 nodes) | Through deviation | Deviation-based data analysis: use deviation to compare two datasets | 3/3 |
 | C-advanced (10 nodes) | Through variance, std dev, scatter plot | Direct computation of deviation products — shortest path to covariance | 3/3 |
 
-**Table 13.** v1 correlation coefficient: profile × route × consistency. All three routes differ from each other and from the v0 baseline.
+**Table 12.** v1 correlation coefficient: profile × route × consistency. All three routes differ from each other and from the v0 baseline.
 
 **Turn 2 — obstacle detection (3 runs, A-mid profile):** All 3 runs identified the fuzzy deviation node and re-routed to the mean ancestor: *"I've found a reef — deviation isn't solidly in place. Mean is solid, so let's re-experience from there."*
 
@@ -596,7 +596,7 @@ A separately constructed concept graph (26 nodes, 40 edges) was applied to facto
 | A-mid (12 nodes) | Through expansion | "Expand $(x+3)(x+5)$ — now can you go backward?" | 3/3 |
 | C-advanced (17 nodes) | Through expansion formulas and common-factor extraction | Reverse of expansion + direct approach to the 3 factoring patterns at the frontier | 3/3 |
 
-**Table 14.** v1 factoring: profile × teaching route × consistency. Turn 2 (3 runs, A-mid): the LLM tutor guided the simulated learner profile to notice $3+5=8$, $3 \times 5=15$ within an already-computed expansion, constructing the factoring discovery from a confirmed skill.
+**Table 13.** v1 factoring: profile × teaching route × consistency. Turn 2 (3 runs, A-mid): the LLM tutor guided the simulated learner profile to notice $3+5=8$, $3 \times 5=15$ within an already-computed expansion, constructing the factoring discovery from a confirmed skill.
 
 ### 5.3.4 Full Score Summary
 
@@ -622,7 +622,7 @@ graph LR
 | Turn 2 — obstacle detection | 0/5 | 6/6 |
 | Topic/profile generalization | Correlation only | Correlation + Factoring; Beginner/Mid/Advanced |
 
-**Table 15.** Galaxy full score. Turn-1 N=24: 6 initial correlation runs + 2 topics × 3 profiles × 3 replicates. Turn-2 N=6: 2 topics × 3 replicates (A-mid). The 24/24 and 6/6 rates confirm consistent mechanism function; they are not failure-probability estimates for deployment. Tutors wrote natural-language observations in all 30 calls without knowledge of node IDs or graph structure.
+**Table 14.** Galaxy full score. Turn-1 N=24: 6 initial correlation runs + 2 topics × 3 profiles × 3 replicates. Turn-2 N=6: 2 topics × 3 replicates (A-mid). The 24/24 and 6/6 rates confirm consistent mechanism function; they are not failure-probability estimates for deployment. Tutors wrote natural-language observations in all 30 calls without knowledge of node IDs or graph structure.
 
 ---
 
@@ -1530,7 +1530,7 @@ Two responses were classified differently:
 
 ---
 
-## D.6 TBD Items
+## D.6 Outstanding items
 
 - Formal P1–P4 operationalization as measurable criteria (current rubric provides qualitative descriptions only; P5 is the only level with a reproducible positive criterion)
 - Exact sample breakdown for the 65-response re-classification event (which probes, which conditions)
