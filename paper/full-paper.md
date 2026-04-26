@@ -3,7 +3,7 @@
 ---
 
 # Abstract
-LLM mathematics tutors exhibit a documented failure mode: when a learner signals non-comprehension, models reformulate explanations at the same conceptual depth — *lateral movement* — rather than descending to the learner's existing knowledge. We present a four-layer control architecture that addresses this failure by making the learner's acquired concept set the operational input that determines teaching path selection. The four layers are: (1) a *principle layer* encoding a discovery-first pedagogical sequence drawn from Freudenthal's Guided Reinvention; (2) a *knowledge state layer* representing the learner's acquired concepts as a node subset on a prerequisite graph, in the sense of Knowledge Space Theory; (3) a *strategy few-shot layer* providing a single transferable behavior-activation rule; and (4) a *concept map layer* externalized as a callable tool rather than embedded in the prompt. We report three experiments. C2 (55 runs) established that the three-layer prompt configuration produces stable discovery-first behavior across algebra, statistics, geometry, and number theory. H1 (475 runs across two model families) demonstrated through ablation that only the acquired-knowledge component affects tutoring paths; struggle indicators and learning-style annotations were ineffective. Galaxy (30 runs plus baseline) showed that externalizing the concept map as a Model Context Protocol tool — rather than embedding it — causes profile-dependent route selection and obstacle detection (30/30 vs. 5/5 default routes). The contribution is a system-level validation of the control mechanism, not a learning-outcomes evaluation; effectiveness measurement is identified as the principal next step.
+LLM mathematics tutors exhibit a documented failure mode: when a learner signals non-comprehension, models reformulate explanations at the same conceptual depth — *lateral movement* — rather than descending to the learner's existing knowledge. We present a four-layer control architecture that addresses this failure by making the learner's acquired concept set the operational input that determines teaching path selection. The four layers are: (1) a *principle layer* encoding a discovery-first pedagogical sequence drawn from Freudenthal's Guided Reinvention; (2) a *knowledge state layer* representing the learner's acquired concepts as a node subset on a prerequisite graph, in the sense of *Knowledge Space Theory* (KST), a formal framework that models learner knowledge as subsets of a domain's concept set; (3) a *strategy few-shot layer* providing a single transferable behavior-activation rule; and (4) a *concept map layer* externalized as a callable tool rather than embedded in the prompt. We report three experiments. C2 (55 runs) established that the three-layer prompt configuration produces stable discovery-first behavior across algebra, statistics, geometry, and number theory. H1 (475 runs across two model families) demonstrated through ablation that only the acquired-knowledge component affects tutoring paths; struggle indicators and learning-style annotations were ineffective. Galaxy (30 runs plus baseline) showed that externalizing the concept map as a Model Context Protocol (MCP) tool — a JSON-RPC interface that lets the model query the map at decision points rather than reading it from the prompt — causes profile-dependent route selection and obstacle detection (30/30 vs. 5/5 default routes). The contribution is a system-level validation of the control mechanism, not a learning-outcomes evaluation; the reported rates characterize mechanism function, not deployment reliability. Effectiveness measurement is identified as the principal next step.
 
 **Keywords:** AI tutoring, LLM mathematics education, knowledge space theory, guided reinvention, control architecture, concept graph, model context protocol
 
@@ -40,6 +40,23 @@ First, we present the design of the four-layer control architecture. Each layer 
 Second, we report three experiments that validate the architecture. Experiment 1 (C2, 55 runs) established that the three-layer configuration — principle, knowledge state, and strategy few-shot, without the concept map — produces stable discovery-first teaching behavior across topics including algebra, statistics, geometry, and number theory. Experiment 2 (H1, 475 runs across Gemini and Claude) demonstrated through ablation that only the acquired-knowledge component of the learner profile affects tutoring paths; struggle indicators and learning style descriptors had no detectable effect, a finding that is model-independent and directly informs the knowledge state layer's design. Experiment 3 (Galaxy, 30 runs plus a 5-run baseline) showed that externalizing the concept map as a Model Context Protocol (MCP) tool — rather than embedding it in the prompt — causes the tutor to select profile-dependent teaching routes with obstacle detection. Full result details appear in Sections 4 and 5.
 
 Third, we connect the learner profile to a formal theoretical construct: the knowledge state in Knowledge Space Theory (KST). A KST knowledge state is a subset of concepts that a learner has acquired on a prerequisite graph — precisely the structure represented by the knowledge state layer. This correspondence was identified after the architecture had been validated on experimental grounds; KST then provides a formal vocabulary characterizing which knowledge states are reachable (antichain-closed subsets), what frontier concepts are accessible from a given state, and what detour routes become available when a concept proves inaccessible (see Section 6.1 for the retrospective nature of this mapping). The architecture translates these formal properties into operational tutoring behaviors.
+
+```mermaid
+graph TB
+    subgraph Prompt["System Prompt (standing constraints)"]
+        L1["Layer 1: Principle<br/>experience → discovery → naming"]
+        L2["Layer 2: Knowledge State<br/>acquired concept set"]
+        L3["Layer 3: Strategy Few-Shot<br/>single behavioral exemplar"]
+    end
+    L4["Layer 4: Concept Map<br/>MCP tool: where_are_we"]
+
+    Prompt -- "invokes at each turn" --> L4
+    L4 -- "returns frontier / obstacle / detour" --> Prompt
+
+    style L4 fill:#d4edda,stroke:#28a745
+```
+
+**Figure 1.** Four-layer control architecture. Layers 1–3 embed in the system prompt as standing constraints. Layer 4 is invoked as an external tool at each conversational turn. Section 3 details each layer.
 
 ### Paper Organization
 
@@ -150,24 +167,7 @@ Four layers govern how an LLM tutor teaches mathematics — not what it knows, b
 3. **Strategy Few-Shot Layer** — A single behavioral exemplar that activates the target teaching pattern. *Triggers* the teaching style without enumerating rules.
 4. **Concept Map Layer** — The prerequisite graph for the target domain, provided as an external MCP tool (`where_are_we`). Supplies *route calculation* infrastructure.
 
-```mermaid
-graph TB
-    subgraph Prompt["System Prompt (standing constraints)"]
-        L1["Layer 1: Principle<br/>experience → discovery → naming"]
-        L2["Layer 2: Knowledge State<br/>acquired concept set"]
-        L3["Layer 3: Strategy Few-Shot<br/>single behavioral exemplar"]
-    end
-    L4["Layer 4: Concept Map<br/>MCP tool: where_are_we"]
-
-    Prompt -- "invokes at each turn" --> L4
-    L4 -- "returns frontier / obstacle / detour" --> Prompt
-
-    style L4 fill:#d4edda,stroke:#28a745
-```
-
-**Figure 1.** Four-layer control architecture. Layers 1–3 embed in the system prompt as standing constraints. Layer 4 is invoked as an external tool at each conversational turn.
-
-Layers 1–3 were established by the C2 experiment (Section 4.1); Layer 4 was identified as necessary by the Galaxy experiment (Section 4.3), which showed that without a map tool the tutor defaults to a fixed route regardless of knowledge state.
+The architecture is shown schematically in Figure 1 (Section 1). Layers 1–3 were established by the C2 experiment (Section 4.1); Layer 4 was identified as necessary by the Galaxy experiment (Section 4.3), which showed that without a map tool the tutor defaults to a fixed route regardless of knowledge state.
 
 ---
 
@@ -195,7 +195,7 @@ The knowledge state layer represents the learner's acquired concept set as the t
 
 > Acquired concepts: four arithmetic operations, negative numbers, mean, deviation, variables, coordinate plane, exponentiation, square root.
 
-The decision to represent the learner profile *exclusively* as an acquired-concept set was validated by the H1 ablation study (Section 4.2), which varied three components across 475 runs (400 Gemini, 75 Claude):
+The decision to populate the knowledge state with the acquired-concept set K *alone* was validated by the H1 ablation study (Section 4.2), which compared three candidate components across 475 runs (400 Gemini, 75 Claude):
 
 - **K** — acquired knowledge; **S** — struggle history; **L** — learning style
 
@@ -306,22 +306,22 @@ graph LR
     coord -.-> scatter
     exp_node -.-> var
 
-    style mean fill:#1a7a3c,color:#fff
-    style dev fill:#1a7a3c,color:#fff
-    style var fill:#1a7a3c,color:#fff
-    style std fill:#1a7a3c,color:#fff
-    style cov fill:#1a7a3c,color:#fff
-    style scatter fill:#1a7a3c,color:#fff
-    style corr fill:#1a7a3c,color:#fff
+    style mean fill:#1a7a3c,color:#fff,stroke:#000,stroke-width:3px
+    style dev fill:#1a7a3c,color:#fff,stroke:#000,stroke-width:3px
+    style var fill:#1a7a3c,color:#fff,stroke:#000,stroke-width:3px
+    style std fill:#1a7a3c,color:#fff,stroke:#000,stroke-width:3px
+    style cov fill:#1a7a3c,color:#fff,stroke:#000,stroke-width:3px
+    style scatter fill:#1a7a3c,color:#fff,stroke:#000,stroke-width:3px
+    style corr fill:#1a7a3c,color:#fff,stroke:#000,stroke-width:3px
 
-    style neg fill:#5cb85c,color:#fff
-    style sq fill:#5cb85c,color:#fff
-    style arith fill:#5cb85c,color:#fff
-    style coord fill:#f0ad4e
-    style exp_node fill:#ffffcc
+    style neg fill:#5cb85c,color:#fff,stroke:#000,stroke-width:1px
+    style sq fill:#5cb85c,color:#fff,stroke:#000,stroke-width:1px
+    style arith fill:#5cb85c,color:#fff,stroke:#000,stroke-width:1px
+    style coord fill:#f0ad4e,stroke:#000,stroke-width:1px,stroke-dasharray:5 5
+    style exp_node fill:#ffffcc,stroke:#000,stroke-width:1px,stroke-dasharray:2 3
 ```
 
-**Figure 2.** Concept graph for the correlation coefficient domain. Core nodes (confidence 1.0) in dark green; medium-confidence nodes (0.9) in light green; mid-band node (0.5) in amber; fringe node (0.4) in pale yellow. Core edges (confidence ≥ 0.7) shown as solid lines; fringe edges as dashed lines.
+**Figure 2.** Concept graph for the correlation coefficient domain. Confidence tier is encoded redundantly by both fill color and border style: core (1.0) in dark green with thick solid border; medium-high (0.9) in light green with thin solid border; mid-band (0.5) in amber with dashed border; fringe (0.4) in pale yellow with dotted border. Core edges (confidence ≥ 0.7) are solid; fringe edges are dashed.
 
 The multi-model union captures domain-level consensus; learner-level variation is handled by Layer 2, which specifies which nodes the specific learner has acquired.
 
@@ -349,7 +349,7 @@ Three experiments validate the four-layer control architecture: C2 (control laye
 
 ---
 
-## 4.0 Research Program Scope
+## 4.0 Experimental Program Overview
 
 The experimental program ran from February to April 2026. Experiment 1 (C2) comprised eleven sub-experiments covering iterative prompt design and a formal stability evaluation. Experiment 2 (H1) produced 475 classified tutor responses across two model families under five knowledge-state ablation conditions. Experiment 3 (Galaxy) produced 35 runs across two concept domains and three learner profiles. Concept-graph construction was validated at two scales: a single-domain benchmark comparison against MOOCCubeX (96% precision) and a structural validation across 60 units, 435 concepts, and 1,093 prerequisite edges. All experimental artifacts are maintained in the project repository.
 
@@ -414,21 +414,9 @@ Conditions C0 and C1 enumerated behavioral instructions with increasing detail. 
 | 11d | Single-probe stability (temperature=0 × 5) | 5 | P6 | 5/5 consistent discovery-first first move |
 | 11e | Full vs. None × 4 probes × 5 replicates | 40 | P6, P5, P-stat, P-geom | Full: 11/20 Experience; None: 8/20 (aggregate) |
 
-**Controls and classification.** Temperature=0, Fisher-Yates shuffle of few-shot component order, and exponential backoff retry logic were enforced. Responses were classified by the first substantive tutor move: *Experience* (calculation, diagram, or substitution request), *Confirmation* (probing existing knowledge), or *Explanation* (passive concept presentation). Inter-rater agreement was κ=0.831; the full P1–P5 HIL quality rubric, the three-category response classifier, the labeling procedure, and the 65-item re-classification log are documented in Appendix E. Re-classification changed 22 labels (34%), revising the Full condition experience rate from 95% to 55%.
+**Controls and classification.** We enforced temperature=0, Fisher-Yates shuffle of few-shot component order, and exponential backoff retry logic. We classified each response by the first substantive tutor move: *Experience* (calculation, diagram, or substitution request), *Confirmation* (probing existing knowledge), or *Explanation* (passive concept presentation). Inter-rater agreement was κ=0.831; the full P1–P5 HIL quality rubric, the three-category response classifier, the labeling procedure, and the 65-item re-classification log are documented in Appendix E. A post-hoc re-classification of the same 65 items changed 22 labels (34%), revising the Full condition experience rate from 95% to 55%.
 
-**Model comparison.**
-
-**Table 6. Model × Condition Behavior**
-
-| Model | Principle only | Principle + Knowledge State | Full (+ Few-Shot) |
-|-------|---------------|----------------------------|-------------------|
-| Gemini 2.5 Flash | Substitution pattern | Substitution pattern | Substitution pattern |
-| Gemini 2.5 Pro | Substitution pattern | Substitution pattern | Common-factor grouping |
-| Claude Opus 4.6 | — | Unstable | Common-factor grouping |
-
-The strategy few-shot activated discovery-first behavior only at frontier-tier model level; the knowledge state alone was insufficient for Flash, and the few-shot was the decisive activating component for Pro-tier models.
-
-**Domain transfer.** The algebra few-shot applied without modification to P-stat and P-geom produced discovery-first behavior in both domains (Section 5.1).
+**Model comparison and domain transfer.** Sub-experiment 10 crossed three models (Gemini 2.5 Flash, Gemini 2.5 Pro, Claude Opus 4.6) with three prompt conditions (principle only, principle + knowledge state, full); results are reported in Section 5.1.1 (Table 9). The algebra few-shot applied without modification to P-stat and P-geom produced discovery-first behavior in both domains (Section 5.1).
 
 ---
 
@@ -535,7 +523,7 @@ The 3-turn P5 simulation confirmed the experience → discovery → naming seque
 
 Full (C2 + knowledge state + few-shot) vs. None (C2 only), n=20 each: Full 11/20 = 55.0% [31.5%, 76.9%]; None 8/20 = 40.0% [19.1%, 63.9%] (Clopper-Pearson 95% CI). Cohen's h = 0.30 (small; Cohen, 1988); confidence intervals overlap substantially and the aggregate is not statistically significant at this sample size.
 
-The Pattern A/B partition below was identified by post-hoc inspection of the labeled responses, not pre-registered. We report it as an exploratory observation rather than a confirmatory finding; replication in a pre-registered follow-up is required before drawing confirmatory inferences from it:
+A post-hoc inspection of the labeled responses identified the Pattern A/B partition below; we did not pre-register it. We report it as an exploratory observation rather than a confirmatory finding; replication in a pre-registered follow-up is required before drawing confirmatory inferences from it:
 
 | Pattern | Probes | Full condition | None condition | Interpretation |
 |---------|--------|---------------|----------------|----------------|
@@ -590,7 +578,7 @@ The knowledge state layer requires only K.
 
 ## 5.3 Experiment 3 Results: Tool-Externalized Map Changes Teaching Routes
 
-Externalizing the concept map as an MCP tool (`where_are_we`) causes profile-dependent route selection; embedding the same map in the system prompt produces no graph-guided behavior. Across 30 v1 runs (24 Turn-1 + 6 Turn-2), every run was consistent with the graph's frontier computation and the learner's acquired concept set.
+Externalizing the concept map as an MCP tool (`where_are_we`) causes profile-dependent route selection; embedding the same map in the system prompt produces no graph-guided behavior. Across 30 v1 runs (24 Turn-1 + 6 Turn-2), every run was consistent with the graph's frontier computation and the learner's knowledge state.
 
 ### 5.3.1 v0 Baseline: Prompt-Embedded Map Is Not Consulted
 
@@ -712,7 +700,7 @@ The results establish that the four-layer architecture functions as designed: it
 
 **L2: Generalization scope.** Two constraints bound the current results. First, tutor-behavior experiments covered two concept domains (correlation coefficient and factoring/expansion); this replicates the structural findings but does not establish generalization to trigonometric functions, quadratic equations, differential calculus, or domains with distinct prerequisite structures. Second, results were obtained with frontier-tier models; pilot work with Gemini 2.5 Flash indicated that the principle layer and strategy few-shot failed to reliably activate discovery-first behavior, suggesting a model-capability threshold below which the architecture does not engage. The graph-computation layer scales to 60 units (435 concepts, 1,093 edges), but the tutor-behavior layers have not been verified at that scale.
 
-**L3 + L4: Methodological scope.** In all experiments, the learner's knowledge state *K* was initialized manually using researcher-constructed profiles. The lateral-movement problem framing was partly motivated by retrospective observations from pilot tutoring sessions conducted by the authors, introducing a circularity risk between problem identification and architectural design. Independent evidence from GuideEval (Liu et al., 2025), finding low orchestration-strategy adaptivity across multiple LLM tutoring systems, substantially reduces this concern for the problem framing; however, automatic *K* estimation from conversation remains unimplemented. A deployed system requires either a pre-session assessment or an online estimation mechanism.
+**L3 + L4: Methodological scope.** In all experiments, the learner's knowledge state *K* was initialized manually using researcher-constructed profiles. The lateral-movement problem framing was partly motivated by retrospective observations from pilot tutoring sessions conducted by the authors, introducing a circularity risk between problem identification and architectural design. GuideEval (Liu et al., 2025) — conducted by a separate research group on a different set of LLM tutors — independently documented low orchestration-strategy adaptivity, substantially reducing this concern for the problem framing. However, automatic *K* estimation from conversation remains unimplemented; a deployed system requires either a pre-session assessment or an online estimation mechanism. A separate methodological gap is the design confound noted in Section 5.2.3: the H1 Phase 3 S few-shot depicted a questioning learner while the S knowledge state described a non-questioning learner. A matched S few-shot evaluation — pairing few-shot and knowledge state on the same learner posture — remains outstanding and is required before the S null effect can be interpreted as structural rather than as an artifact of this mismatch.
 
 **L5 + L6: Measurement and benchmark quality gaps.** The `where_are_we` surveyor's classification precision — how often it correctly reflects the learner's actual knowledge state — has not been evaluated against ground truth. Precision degradation in ambiguous inputs could produce incorrect frontier or obstacle calculations. Separately, concept graph validation against MOOCCubeX found approximately 40% of benchmark edges directly valid, 48% indirectly valid, and 12% noise. The 96% precision figure therefore characterizes convergence between two imperfect reference points; absolute graph quality against an expert-validated ground truth has not been established.
 
@@ -732,7 +720,7 @@ The results establish that the four-layer architecture functions as designed: it
 
 The limitations above define four priorities, ordered by what must be established before the architecture can be responsibly deployed.
 
-**Priority 1: Educational effectiveness evaluation — the central open question of this research program.** The architecture has been validated behaviorally; it has not been shown to improve learning. The appropriate design is a within-subjects study in which the same learners receive both the tool-externalized four-layer configuration and a baseline condition on matched topics, with outcomes including immediate post-session comprehension and delayed retention. This study should begin on the two Galaxy domains before expanding.
+**Priority 1: Educational effectiveness evaluation — the central open question of this research program.** Behavioral validation of the architecture is not deployment readiness: the experiments establish that the four-layer configuration produces the intended teaching behaviors, not that those behaviors translate into measurable learning gains. The appropriate design is a within-subjects study in which the same learners receive both the tool-externalized four-layer configuration and a baseline condition on matched topics, with outcomes including immediate post-session comprehension and delayed retention. This study should begin on the two Galaxy domains before expanding.
 
 **Priority 2: Automatic knowledge state estimation.** A deployed system cannot rely on manually initialized profiles. The `where_are_we` surveyor is the natural candidate for online *K* updating; an evaluation of its classification precision against human expert judgment would establish reliability. A lightweight diagnostic exchange seeding an initial *K* without a formal assessment phase is a candidate initialization mechanism; whether it produces sufficient accuracy is an open empirical question.
 
@@ -760,7 +748,7 @@ The four layers and their functions are:
 
 1. **Principle layer**: Encodes the discovery-first pedagogical sequence (experience → discover → name), grounded in Freudenthal's Guided Reinvention. This layer constrains the direction of decomposition: the tutor builds from the learner's knowledge state upward toward the target concept, rather than presenting the finished concept and expecting learner-side decomposition.
 
-2. **Knowledge state layer**: Represents the learner's acquired concept set as a node subset on the prerequisite graph. Only this component — the acquired-knowledge representation K — affects tutoring paths. Stumbling-block records and learning-style annotations produced no distinguishable effect, leading to the design decision to focus the knowledge state on K alone.
+2. **Knowledge state layer**: Represents the learner's knowledge state K — the acquired concept set — as a node subset on the prerequisite graph. Only K affects tutoring paths; stumbling-block records and learning-style annotations produced no distinguishable effect.
 
 3. **Strategy few-shot layer**: Provides a single activation pattern for discovery-first teaching behavior. The C2 experiments (55 runs across four mathematical domains) demonstrated that one well-chosen few-shot example transfers the discovery-first behavior across algebra, statistics, geometry, and number theory. The few-shot functions as an activation trigger, not a behavioral manual.
 
@@ -772,11 +760,11 @@ The Discussion reframes these results in terms of Knowledge Space Theory. The le
 
 What this paper does not establish is that the architecture improves learning outcomes. The Galaxy experiment shows that teaching routes differ across learner profiles; it does not show that the route selected by the architecture produces better comprehension or retention than the default route. This is the most important open question, and it requires controlled experimental evaluation with pre- and post-assessment — work that the current paper identifies but does not undertake.
 
-The broader implication concerns where the problem of LLM tutoring actually lies. The last several years have produced substantial evidence that large language models possess impressive mathematical competence. The question of whether LLMs *know* enough mathematics to teach it is largely resolved, at least for secondary-level content. The question that remains — and that this paper addresses — is whether they can be made to teach it well for a specific learner. Teaching well, in the sense meant here, is not a matter of generating accurate explanations; it is a matter of selecting the explanation that connects to what this particular learner already knows, at the depth that this learner currently needs, in an order that leads toward understanding rather than confusion. That is a control problem, not a knowledge problem. The four-layer architecture is a proposal for how to solve it.
+The broader implication concerns where the problem of LLM tutoring actually lies. Benchmark results reviewed in Section 1 — perfect AIME scores and gold-medal-level IMO performance by 2025 — settle the question of whether LLMs *know* enough mathematics to teach secondary-level content. The question that remains — and that this paper addresses — is whether they can be made to teach it well for a specific learner. Teaching well, in the sense meant here, is not a matter of generating accurate explanations; it is a matter of selecting the explanation that connects to what this particular learner already knows, at the depth that this learner currently needs, in an order that leads toward understanding rather than confusion. That is a control problem, not a knowledge problem. The four-layer architecture is a proposal for how to solve it.
 
 The components required for this solution are now becoming available: models capable of sustained mathematical dialogue, tools for building concept prerequisite graphs at high precision, and a formal framework (KST) for representing learner knowledge states. What remained missing was an architecture that connected these components into a functioning control layer. The present work describes that architecture, reports the experiments that validated its key design choices, and identifies the experiments — particularly the educational effectiveness study — that will determine whether the control it provides translates into learning gains.
 
-Controlling how an LLM teaches is the next step in making AI tutoring genuinely useful. This paper establishes the design and demonstrates its behavioral properties. The step that follows is to measure its educational effect.
+Controlling how an LLM teaches is a prerequisite to making AI tutoring effective for individual learners. This paper establishes the design and demonstrates its behavioral properties; whether that control translates into improved learning outcomes is the question Priority 1 future work is designed to answer.
 
 ---
 
