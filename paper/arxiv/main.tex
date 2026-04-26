@@ -976,7 +976,7 @@ The limitations above define four priorities, ordered by what must be establishe
 
 \section{Conclusion}\label{conclusion}
 
-The central claim of this paper is not that LLMs can teach mathematics --- that capacity is already evident from benchmark results. The central claim is that \emph{how} an LLM teaches mathematics can be controlled, and that the mechanism of control is a four-layer architecture operating above the model itself.
+The central claim of this paper is not that LLMs \emph{know} mathematics --- that capacity is already evident from benchmark results. The central claim is that \emph{how} an LLM teaches mathematics can be controlled, and that the mechanism of control is a four-layer architecture operating above the model itself.
 
 We designed the architecture in response to a specific, documented failure mode: LLM tutors default to lateral movement when a learner signals non-comprehension, producing repeated explanations at the same conceptual depth rather than descending to the learner\textquotesingle s existing knowledge. This behavior is not a property of any single model; GuideEval (Liu et al., 2025) found it consistently across evaluated systems. The architecture addresses this failure by making the learner\textquotesingle s acquired concept set --- their knowledge state in the KST sense --- the operational input that determines teaching path selection.
 
