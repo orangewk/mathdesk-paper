@@ -692,6 +692,8 @@ Controlling how an LLM teaches is a prerequisite to making AI tutoring effective
 
 This work began as an attempt to teach mathematics to my daughter. At one point she said, "I don't even know where I stopped understanding." The remark made the lateral-movement failure mode analyzed in this paper immediately recognizable — not as a benchmark phenomenon but as the moment a learner reaches for help and the tutor cannot locate where understanding broke. The four-layer architecture is, at root, an attempt to give an LLM tutor what an attentive human teacher does in such moments: find the point at which the learner's understanding ended, and rebuild from there. I am grateful to her for the observation, and for being the first user of every prototype.
 
+MathDesk is built for learners who would not pass a placement test — the ones who cannot even say where the difficulty starts. The four-layer architecture is, at root, what it took to make an LLM tutor usable for that audience.
+
 ---
 
 ## Data and Code Availability
