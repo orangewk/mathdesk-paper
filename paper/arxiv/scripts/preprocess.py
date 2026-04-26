@@ -31,16 +31,11 @@ text = re.sub(
     "",
     text,
 )
-# 2. Extract abstract+keywords block and remove from body — main.tex carries it
-abstract_match = re.search(
-    r"# Abstract\n(.*?)\n+(?:---\n+)?(?=# Section 1)",
-    text,
-    flags=re.DOTALL,
-)
-if abstract_match:
-    abstract_body = abstract_match.group(1).strip()
-    (BUILD / "abstract.tex").write_text(abstract_body, encoding="utf-8")
-    text = text[:abstract_match.start()] + text[abstract_match.end():]
+# 2. (Previously: extracted Abstract to build/abstract.tex and stripped it from body;
+#    but main.tex never \input'd the result, so the Abstract was missing from the PDF.
+#    Now: leave the `# Abstract` section in the body. pandoc will render it as a
+#    \section{Abstract} just before Section 1, and the Figure 1 image embedded inside
+#    it will appear on page 1. Cleaner than building a custom \abstract macro.)
 
 # 3. Demote `# Section N: Title` to top-level section, drop duplicated `## N. Title`
 text = re.sub(r"^# Section \d+: ", r"# ", text, flags=re.MULTILINE)
