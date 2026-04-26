@@ -9,7 +9,7 @@ The underlying cause is not a knowledge deficit. As of 2025, leading large langu
 
 ### The Core Problem: Control, Not Knowledge
 
-When a learner does not understand a concept, the critical question is not "what else can I say about this concept?" but "what does this specific learner already know, and what prerequisite layer is missing?" These are structurally different questions. The first operates on the concept; the second operates on the learner's knowledge state relative to the concept's prerequisite graph. Answering the second question requires three things: a representation of the learner's acquired concepts, a map of the concept's prerequisite structure, and a principle that governs how the tutor should move through that structure in response to comprehension signals.
+When a human learner does not understand a concept, the critical question is not "what else can I say about this concept?" but "what does this specific human learner already know, and what prerequisite layer is missing?" These are structurally different questions. The first operates on the concept; the second operates on the human learner's knowledge state relative to the concept's prerequisite graph. Answering the second question requires three things: a representation of the human learner's acquired concepts, a map of the concept's prerequisite structure, and a principle that governs how the LLM tutor should move through that structure in response to comprehension signals.
 
 None of these three elements — learner representation, prerequisite map, pedagogical principle — are provided by default in an LLM tutoring interaction. Without them, the LLM falls back on its statistical defaults: rephrasing, adding examples, adjusting register. The result is lateral movement. The failure is not a model capability failure; it is a control architecture failure.
 
@@ -188,9 +188,9 @@ The strategy few-shot layer specifies the target teaching pattern as a concise p
 
 Early formulations (Experiment 6, Section 4.1) used a concrete exchange from factoring instruction; in the final configuration this is compressed to:
 
-1. Identify what the learner already knows.
-2. Connect that knowledge to the target concept via the prerequisite structure encoded in the model's internal representation.
-3. Engage the known knowledge first (experience), let the learner observe the emerging pattern (discovery), and name the result last (formalization).
+1. Identify what the human learner already knows.
+2. Connect the human learner's knowledge to the target concept via the prerequisite structure encoded in the LLM's internal representation.
+3. Engage the human learner's known knowledge first (experience), let the human learner observe the emerging pattern (discovery), and name the result last (formalization).
 
 **Domain transfer.** A single rule — formulated from one domain — transferred to algebra, statistics, geometry, and number theory without modification. It operates at the level of pedagogical structure, not domain content.
 
@@ -204,17 +204,17 @@ Early formulations (Experiment 6, Section 4.1) used a concrete exchange from fac
 
 ## 3.5 Layer 4: The Concept Map as an External Tool
 
-The concept map is provided as an external MCP tool rather than embedded in the system prompt. This is the central architectural finding of the Galaxy experiment (Section 4.3): embedding causes the model to ignore the map; externalization causes active consultation.
+The concept map is provided as an external MCP tool rather than embedded in the system prompt. This is the central architectural finding of the Galaxy experiment (Section 4.3): embedding causes the LLM tutor to ignore the map; externalization causes active consultation.
 
-**The `where_are_we` tool.** The tool accepts a natural-language observation from the tutor and returns a structured navigation report classifying each concept node as *confident*, *fuzzy*, or *unknown*, then computing:
+**The `where_are_we` tool.** The tool accepts a natural-language observation from the LLM tutor and returns a structured navigation report classifying each concept node as *confident*, *fuzzy*, or *unknown*, then computing:
 
 - **Frontier** — concepts immediately reachable from the learner's current position.
 - **Obstacles** — nominally acquired nodes flagged as fuzzy — potential prerequisite instability.
 - **Detour** — if an obstacle is detected, a path back to a confident node for re-experience.
 
-A *surveyor* sub-agent converts the tutor's observation into node-level status estimates; a deterministic graph step produces frontier, obstacle, and detour outputs. The full tool schema, surveyor configuration, and graph algorithms are documented in Appendix C.
+A *surveyor* sub-agent (itself an LLM call) converts the LLM tutor's observation into node-level status estimates; a deterministic graph step produces frontier, obstacle, and detour outputs. The full tool schema, surveyor configuration, and graph algorithms are documented in Appendix C.
 
-**Embedding vs. tool.** In Galaxy v0, the map was embedded as JSON in the system prompt. All five runs ignored it and followed the same default route. In v1, provided as `where_are_we`, the tutor called the tool at each turn and produced profile-dependent paths across all three profiles (15/15). Replication on factorization confirmed generalization (9/9 profile-dependent routes, 3/3 obstacle detections). The mechanism reflects a general property: embedded text may be bypassed; tool invocation creates an explicit retrieval event the model incorporates.
+**Embedding vs. tool.** In Galaxy v0, the map was embedded as JSON in the system prompt. In all five runs, the LLM tutor ignored it and followed the same default route. In v1, provided as `where_are_we`, the LLM tutor called the tool at each turn and produced profile-dependent paths across all three profiles (15/15). Replication on factorization confirmed generalization (9/9 profile-dependent routes, 3/3 obstacle detections). The mechanism reflects a general property: embedded text may be bypassed by the LLM; tool invocation creates an explicit retrieval event the LLM incorporates.
 
 **Modularity.** Switching domains required only changing the graph data file in the MCP server; Layers 1–3 were unchanged.
 
@@ -544,7 +544,7 @@ A separately constructed concept graph (26 nodes, 40 edges) was applied to facto
 | A-mid (12 nodes) | Through expansion | "Expand $(x+3)(x+5)$ — now can you go backward?" | 3/3 |
 | C-advanced (17 nodes) | Through expansion formulas and common-factor extraction | Reverse of expansion + direct approach to the 3 factoring patterns at the frontier | 3/3 |
 
-**Table 13.** v1 factoring: profile × teaching route × consistency. Turn 2 (3 runs, A-mid): the tutor guided the learner to notice $3+5=8$, $3 \times 5=15$ within an already-computed expansion, constructing the factoring discovery from a confirmed skill.
+**Table 13.** v1 factoring: profile × teaching route × consistency. Turn 2 (3 runs, A-mid): the LLM tutor guided the simulated learner profile to notice $3+5=8$, $3 \times 5=15$ within an already-computed expansion, constructing the factoring discovery from a confirmed skill.
 
 ### 5.3.4 Full Score Summary
 
@@ -666,17 +666,17 @@ Three readings of these results would extend beyond what the data support, and w
 # Conclusion
 The central claim of this paper is not that LLMs *know* mathematics — that capacity is already evident from benchmark results. The central claim is that *how* an LLM teaches mathematics can be controlled, and that the mechanism of control is a four-layer architecture operating above the model itself.
 
-We designed the architecture in response to a specific, documented failure mode: LLM tutors default to lateral movement when a learner signals non-comprehension, producing repeated explanations at the same conceptual depth rather than descending to the learner's existing knowledge. This behavior is not a property of any single model; GuideEval (Liu et al., 2025) found it consistently across evaluated systems. The architecture addresses this failure by making the learner's acquired concept set — their knowledge state in the KST sense — the operational input that determines teaching path selection.
+We designed the architecture in response to a specific, documented failure mode: LLM tutors default to lateral movement when a human learner signals non-comprehension, producing repeated explanations at the same conceptual depth rather than descending to the human learner's existing knowledge. This behavior is not a property of any single LLM; GuideEval (Liu et al., 2025) found it consistently across evaluated LLM tutoring systems. The architecture addresses this failure by making the human learner's acquired concept set — their knowledge state in the KST sense — the operational input that determines the LLM tutor's teaching path selection.
 
 The four layers and their functions are:
 
-1. **Principle layer**: Encodes the discovery-first pedagogical sequence (experience → discover → name), grounded in Freudenthal's Guided Reinvention. This layer constrains the direction of decomposition: the tutor builds from the learner's knowledge state upward toward the target concept, rather than presenting the finished concept and expecting learner-side decomposition.
+1. **Principle layer**: Encodes the discovery-first pedagogical sequence (experience → discover → name), grounded in Freudenthal's Guided Reinvention. This layer constrains the direction of decomposition: the LLM tutor builds from the human learner's knowledge state upward toward the target concept, rather than presenting the finished concept and expecting the human learner to decompose it.
 
-2. **Knowledge state layer**: Represents the learner's knowledge state K — the acquired concept set — as a node subset on the prerequisite graph. Only K affects tutoring paths; stumbling-block records and learning-style annotations produced no distinguishable effect.
+2. **Knowledge state layer**: Represents the human learner's knowledge state K — the acquired concept set — as a node subset on the prerequisite graph. Only K changed the LLM tutor's path selection; stumbling-block records and learning-style annotations had no distinguishable effect on the LLM tutor's behavior.
 
 3. **Strategy few-shot layer**: Provides a single activation pattern for discovery-first teaching behavior. The C2 experiments (55 runs across four mathematical domains) demonstrated that one well-chosen few-shot example transfers the discovery-first behavior across algebra, statistics, geometry, and number theory. The few-shot functions as an activation trigger, not a behavioral manual.
 
-4. **Concept map layer**: Externalizes the prerequisite graph as a callable tool (`where_are_we`) rather than embedding it in the prompt. The Galaxy experiment (30/30) established that prompt embedding produces no behavioral change — the tutor defaults to the same route regardless of the learner's profile — while tool externalization produces profile-dependent path selection and obstacle detection. The key result: the format in which the map is provided, not only its content, determines whether the tutor uses it.
+4. **Concept map layer**: Externalizes the prerequisite graph as a callable tool (`where_are_we`) rather than embedding it in the prompt. The Galaxy experiment (30/30) established that prompt embedding produces no behavioral change — the LLM tutor defaults to the same route regardless of the human learner's profile — while tool externalization produces profile-dependent path selection and obstacle detection. The key result: the format in which the map is provided to the LLM, not only its content, determines whether the LLM tutor uses it.
 
 Three experiments validated the architecture's design claims. C2 established that the three-layer configuration (principle + knowledge state + few-shot) produces stable discovery-first behavior. H1 (475 runs, model-independent) identified K as the operationally relevant knowledge state component and provided empirical grounds for excluding S and L. Galaxy demonstrated that the four-layer configuration — with the map externalized as a tool — produces learner-profile-dependent route selection and obstacle detection across two concept domains.
 
