@@ -43,7 +43,7 @@ Third, we connect the learner profile to a formal theoretical construct: the kno
 ![Four-layer control architecture](figures/fig1-architecture.pdf)
 
 
-**Figure 2.** Four-layer control architecture. Layers 1–3 embed in the system prompt as standing constraints. Layer 4 is invoked as an external tool at each conversational turn. Section 3 details each layer.
+**Figure 2.** Four-layer control architecture. Layers 1–3 embed in the system prompt as standing constraints; Layer 4 is invoked as an external tool at each conversational turn. The asymmetry — three layers as prompt-resident rules versus one layer as a callable function — is the central design move; Section 3 examines each layer in turn and Section 3.5 details why the embedded-vs-tool split is necessary rather than incidental.
 
 ### Paper Organization
 
@@ -62,7 +62,7 @@ The four-layer control architecture rests on two theoretical traditions — Freu
 
 #### Freudenthal's Guided Reinvention and the Anti-Didactic Inversion
 
-Hans Freudenthal's Realistic Mathematics Education (RME; Freudenthal, 1991) is the pedagogical tradition with which the architecture's principle layer aligns; the alignment was identified retrospectively, as a framework for interpreting design decisions arrived at experimentally (see Section 6.1). Freudenthal's central diagnostic observation is that conventional instruction reverses the epistemic order in which mathematical concepts are most naturally understood: schools begin with the finished, formalized product — the name, the definition, the algorithm — rather than with the concrete situation from which it emerged. Freudenthal called this reversal the *anti-didactic inversion*.
+Hans Freudenthal's Realistic Mathematics Education (RME; Freudenthal, 1991) is the pedagogical tradition with which the architecture's principle layer aligns; we identified the alignment retrospectively, as a framework for interpreting design decisions arrived at experimentally (see Section 6.1). Freudenthal's central diagnostic observation is that conventional instruction reverses the epistemic order in which mathematical concepts are most naturally understood: schools begin with the finished, formalized product — the name, the definition, the algorithm — rather than with the concrete situation from which it emerged. Freudenthal called this reversal the *anti-didactic inversion*.
 
 The corrective principle, *Guided Reinvention*, runs in the opposite direction. Instruction begins with a concrete situation that motivates the learner to act without being told what to do; through engagement with it, the concept's structure becomes visible; the formal name arrives last, as a label for something the learner has already constructed. Guided Reinvention is not unstructured discovery: the teacher designs an environment in which the learner's activity naturally converges toward the target concept. Gravemeijer (1994) formalized this as *didactical phenomenology*; Bruner (1966) established the enactive → iconic → symbolic progression as a general pedagogical principle; Toeplitz (1963) proposed that concepts should be introduced through the "burning questions" that made them historically necessary.
 
@@ -126,7 +126,7 @@ WisWeb and the Digital Mathematics Environment, both grounded in RME (van den He
 
 ### 2.3 The Gap
 
-A precise formulation of the gap: *no existing system governs an LLM's teaching route through a concept's prerequisite graph based on a formal representation of the learner's acquired knowledge state.*
+More precisely: *no existing system governs an LLM's teaching route through a concept's prerequisite graph based on a formal representation of the learner's acquired knowledge state.*
 
 Four prior lines of work each approach this gap without closing it.
 
@@ -169,7 +169,7 @@ The principle layer encodes four pedagogical constraints derived from Freudentha
 
 **Vertical Movement.** On two consecutive comprehension failures, the tutor descends one abstraction level rather than producing an alternative representation at the same level. LLM tutors default to lateral movement — representational changes without depth change. GuideEval (Liu et al., 2025) confirmed low orchestration-strategy adaptivity across all evaluated models; this principle overrides that default.
 
-Together, the four principles express a single operation — Building-Blocks decomposition — in which an unknown concept is recursively reduced to components in the learner's acquired knowledge. The principle layer occupies ~40 of the total ~80 prompt lines, encoding the constraint through direct statement and the strategy few-shot (Section 3.4).
+Together, the four principles express a single operation — recursive reduction of an unfamiliar concept into components in the learner's acquired knowledge — which Section 6.1 reframes formally as decomposition over a KST knowledge state. The principle layer occupies ~40 of the total ~80 prompt lines, encoding the constraint through direct statement and the strategy few-shot (Section 3.4).
 
 *Layer 1 complements Layer 3: Layer 1 specifies what pedagogical structure to produce; Layer 3 activates it by demonstration.*
 
@@ -215,7 +215,7 @@ Early formulations (Experiment 6, Section 4.1) used a concrete exchange from fac
 
 ## 3.5 Layer 4: The Concept Map as an External Tool
 
-The concept map is provided as an external MCP tool rather than embedded in the system prompt. This is the central architectural finding of the Galaxy experiment (Section 4.3): embedding causes the LLM tutor to ignore the map; externalization causes active consultation.
+The concept map is provided as an external MCP tool rather than embedded in the system prompt. The Galaxy experiment (Section 4.3) demonstrated why: prompt-embedded maps produce no graph-guided routing behavior, whereas tool-externalized maps do.
 
 **The `where_are_we` tool.** The tool accepts a natural-language observation from the LLM tutor and returns a structured navigation report classifying each concept node as *confident*, *fuzzy*, or *unknown*, then computing:
 
@@ -225,7 +225,7 @@ The concept map is provided as an external MCP tool rather than embedded in the 
 
 A *surveyor* sub-agent (itself an LLM call) converts the LLM tutor's observation into node-level status estimates; a deterministic graph step produces frontier, obstacle, and detour outputs. The full tool schema, surveyor configuration, and graph algorithms are documented in Appendix C.
 
-**Embedding vs. tool.** In Galaxy v0, the map was embedded as JSON in the system prompt. In all five runs, the LLM tutor ignored it and followed the same default route. In v1, provided as `where_are_we`, the LLM tutor called the tool at each turn and produced profile-dependent paths across all three profiles (15/15). Replication on factorization confirmed generalization (9/9 profile-dependent routes, 3/3 obstacle detections). The mechanism reflects a general property: embedded text may be bypassed by the LLM; tool invocation creates an explicit retrieval event the LLM incorporates.
+**Embedding vs. tool.** In Galaxy v0, the map was embedded as JSON in the system prompt. Across all five runs, the embedded map produced no observable effect on the LLM tutor's route selection — the same default route appeared each time. In v1, provided as `where_are_we`, the tool was invoked on each turn and the resulting routes were profile-dependent across all three profiles (15/15). Replication on factorization confirmed generalization (9/9 profile-dependent routes, 3/3 obstacle detections). The mechanism reflects a general property: prompt-embedded text can be skipped at decode time; a tool invocation produces a retrieval event whose result becomes part of the LLM's input window.
 
 **Modularity.** Switching domains required only changing the graph data file in the MCP server; Layers 1–3 were unchanged.
 
@@ -279,15 +279,6 @@ The multi-model union captures domain-level consensus; learner-level variation i
 Layer 1 (Principle) constrains instruction order through four pedagogical principles grounded in Freudenthal's Guided Reinvention framework. Layer 2 (Knowledge State) provides the learner's starting position as an acquired concept set — empirically validated by ablation as the operative component of the learner model. Layer 3 (Strategy Few-Shot) activates target teaching behavior through a single transferable abstract rule. Layer 4 (Concept Map Tool) provides route selection and obstacle detection, externalized as a tool to ensure active consultation.
 
 Each design decision emerged from experimental evidence. The following section describes those experiments.
-
----
-
-## References (Section 3)
-
-- Bruner, J. S. (1966). *Toward a Theory of Instruction*. Harvard University Press.
-- Doignon, J.-P., & Falmagne, J.-C. (1999). *Knowledge Spaces*. Springer.
-- Freudenthal, H. (1991). *Revisiting Mathematics Education: China Lectures*. Kluwer Academic Publishers.
-- Liu, et al. (2025). GuideEval: Evaluating the instructional guidance capabilities of LLM tutors.
 
 ---
 
@@ -429,13 +420,6 @@ Concept graphs for two topics were constructed via the multi-model union method 
 
 ---
 
-## References (Section 4)
-
-- Doignon, J.-P., & Falmagne, J.-C. (1999). *Knowledge Spaces*. Springer.
-- Landis, J. R., & Koch, G. G. (1977). The measurement of observer agreement for categorical data. *Biometrics*, 33(1), 159–174.
-
----
-
 # Results
 
 ## 5.1 Experiment 1 Results: Three-Layer Control Produces Stable Discovery-First Behavior
@@ -460,7 +444,7 @@ Sub-experiment 11d: five runs at temperature=0 on P6, all producing common-facto
 
 ### 5.1.3 Domain Transfer
 
-The strategy few-shot (drawn from a single algebra example) was applied without modification to statistics (P-stat), geometry (P-geom), and parity/algebra (P5). In each case the tutor abstracted the pedagogical pattern rather than the surface content, functioning as a domain-independent activation pattern.
+The strategy few-shot (drawn from a single algebra example) was applied without modification to statistics (P-stat), geometry (P-geom), and parity/algebra (P5). In each case the few-shot's pedagogical pattern transferred regardless of surface content, functioning as a domain-independent activation pattern.
 
 ### 5.1.4 Multi-Turn Coherence
 
@@ -507,7 +491,7 @@ The Gemini P-stat finding replicated with a different model family: Full and K-o
 |---|---|---|---|---|---|
 | Covariance reference rate (out of 5) | 5 | 5 | 0 | 0 | 0 |
 
-**Figure 4.** K-effect replication (P-stat). K-containing conditions: 5/5 covariance references; all non-K conditions: 0/5. Pattern held across Gemini and Claude.
+**Table 12.** Covariance reference rate by condition (P-stat), Claude cross-model replication. K-containing conditions: 5/5 covariance references; all non-K conditions: 0/5. The K-effect held across Gemini (Phase 1) and Claude (Phase 2).
 
 ### 5.2.3 S/L Few-Shot Experiment (25 Responses)
 
@@ -541,7 +525,7 @@ The tutor called `where_are_we` on Turn 1 in all 15 correlation-coefficient runs
 | A-mid (8 nodes) | Through deviation | Deviation-based data analysis: use deviation to compare two datasets | 3/3 |
 | C-advanced (10 nodes) | Through variance, std dev, scatter plot | Direct computation of deviation products — shortest path to covariance | 3/3 |
 
-**Table 12.** v1 correlation coefficient: profile × route × consistency. All three routes differ from each other and from the v0 baseline.
+**Table 13.** v1 correlation coefficient: profile × route × consistency. All three routes differ from each other and from the v0 baseline.
 
 **Turn 2 — obstacle detection (3 runs, A-mid profile):** All 3 runs identified the fuzzy deviation node and re-routed to the mean ancestor: *"I've found a reef — deviation isn't solidly in place. Mean is solid, so let's re-experience from there."*
 
@@ -555,14 +539,14 @@ A separately constructed concept graph (26 nodes, 40 edges) was applied to facto
 | A-mid (12 nodes) | Through expansion | "Expand $(x+3)(x+5)$ — now can you go backward?" | 3/3 |
 | C-advanced (17 nodes) | Through expansion formulas and common-factor extraction | Reverse of expansion + direct approach to the 3 factoring patterns at the frontier | 3/3 |
 
-**Table 13.** v1 factoring: profile × teaching route × consistency. Turn 2 (3 runs, A-mid): the LLM tutor guided the simulated learner profile to notice $3+5=8$, $3 \times 5=15$ within an already-computed expansion, constructing the factoring discovery from a confirmed skill.
+**Table 14.** v1 factoring: profile × teaching route × consistency. Turn 2 (3 runs, A-mid): the LLM tutor guided the simulated learner profile to notice $3+5=8$, $3 \times 5=15$ within an already-computed expansion, constructing the factoring discovery from a confirmed skill.
 
 ### 5.3.4 Full Score Summary
 
 ![v0 vs. v1 teaching routes (correlation coefficient)](figures/fig4-galaxy-routes.pdf)
 
 
-**Figure 5.** v0 vs. v1 teaching routes (correlation coefficient). v0: all five runs converged on scatter plot; Turn 2 regressed to mean. v1: routes diverged by profile; obstacle detected and re-routed to confident ancestor.
+**Figure 4.** v0 vs. v1 teaching routes (correlation coefficient). *v0 (top):* all five runs converged on a single scatter-plot route, and Turn 2 regressed to a mean explanation rather than graph-guided backtracking. *v1 (bottom):* routes diverged into three profile-specific paths (B-beginner conceptual intuition, A-mid deviation-based analysis, C-advanced direct deviation-products), and for the A-mid profile an obstacle was detected on Turn 2 and the tutor re-routed to a confident ancestor node. The contrast operationalizes the embedded-vs-tool distinction motivated in Section 3.5.
 
 |  | v0 (embedding) | v1 (tool) |
 |--|----------------|-----------|
@@ -570,19 +554,13 @@ A separately constructed concept graph (26 nodes, 40 edges) was applied to facto
 | Turn 2 — obstacle detection | 0/5 | 6/6 |
 | Topic/profile generalization | Correlation only | Correlation + Factoring; Beginner/Mid/Advanced |
 
-**Table 14.** Galaxy full score. Turn-1 N=24: 6 initial correlation runs + 2 topics × 3 profiles × 3 replicates. Turn-2 N=6: 2 topics × 3 replicates (A-mid). The 24/24 and 6/6 rates confirm consistent mechanism function; they are not failure-probability estimates for deployment. Tutors wrote natural-language observations in all 30 calls without knowledge of node IDs or graph structure.
+**Table 15.** Galaxy full score. Turn-1 N=24: 6 initial correlation runs + 2 topics × 3 profiles × 3 replicates. Turn-2 N=6: 2 topics × 3 replicates (A-mid). The 24/24 and 6/6 rates confirm consistent mechanism function; they are not failure-probability estimates for deployment. Tutors wrote natural-language observations in all 30 calls without knowledge of node IDs or graph structure.
 
 ---
 
 ## Summary
 
 Experiment 1 (C2): stable discovery-first behavior above a capability threshold (Pro+), cross-domain transfer from a single exemplar, and a probe-level mechanism — knowledge state prevents regression to generic analogies in Pattern B probes (Cohen's h = 0.30 aggregate; qualitative effect larger). Experiment 2 (H1): K alone changed the connection path origin across 475 responses, two model families, and a few-shot pilot; S and L were ineffective throughout. Experiment 3 (Galaxy): embedding the map produced no graph-guided behavior (0/5); externalizing it as a tool produced profile-dependent routes across all 24 Turn-1 runs and accurate obstacle detection across all 6 Turn-2 runs, generalizing across two topics.
-
----
-
-## References (Section 5)
-
-- Cohen, J. (1988). *Statistical Power Analysis for the Behavioral Sciences* (2nd ed.). Lawrence Erlbaum Associates.
 
 ---
 
@@ -597,7 +575,7 @@ In KST, a *knowledge state* is a subset *K* of a concept domain closed under the
 ![Four-layer architecture mapped to KST-interpretable roles](figures/fig5-kst-mapping.pdf)
 
 
-**Figure 6.** Four-layer architecture mapped to KST-interpretable roles. The correspondence was identified post-hoc; it provides a theoretical vocabulary for design decisions made on experimental grounds.
+**Figure 5.** Four-layer architecture mapped to KST-interpretable roles. The correspondence was identified post-hoc; it provides a theoretical vocabulary for design decisions made on experimental grounds.
 
 **Layer 1 → decomposition direction.** The discovery-first sequence specifies that traversal builds upward from the frontier of *K* toward the target. Anti-Didactic Inversion, in KST terms, requires that instruction begin at concepts whose prerequisites are all already in *K*.
 
@@ -662,15 +640,6 @@ Three readings of these results would extend beyond what the data support, and w
 - **30/30 ≠ deployment-readiness.** The Galaxy success rates characterize mechanism function under controlled conditions — a fixed pair of concept domains, three constructed profiles, frontier-tier models, no learner involved in the runs. Whether the same architecture sustains route selection over diverse human learners across weeks of authentic tutoring is a separate empirical question, identified as Priority 1.
 - **K-only ≠ "learner modeling is simple".** The H1 ablation showed that struggle indicators (S) and learning-style annotations (L) had no behavioral effect *on route selection under the conditions tested*. This finding does not warrant abandoning struggle and style modeling for downstream concerns outside route selection — emotional support during impasse, accessibility accommodations, or motivation maintenance over a long study session. The architecture's claim is narrower than "K is the only learner model component that matters".
 - **Lateral-movement-removed ≠ pedagogy-solved.** The architecture demonstrably removes one specific failure mode: depth-stable rephrasing in response to a comprehension signal. The pedagogical quality of the route the architecture chooses — whether the reformulation it descends to actually produces understanding for a particular learner — is the next-layer question, and it is outside the evidence reported here. The contribution is a control mechanism, not an instructional method.
-
----
-
-## References (Section 6)
-
-- Bruner, J. S. (1966). *Toward a Theory of Instruction*. Harvard University Press.
-- Doignon, J.-P., & Falmagne, J.-C. (1999). *Knowledge Spaces*. Springer.
-- Freudenthal, H. (1991). *Revisiting Mathematics Education: China Lectures*. Kluwer Academic Publishers.
-- Liu, et al. (2025). GuideEval: Evaluating the instructional guidance capabilities of LLM tutors.
 
 ---
 
@@ -1496,4 +1465,4 @@ The prompt was drafted in mixed Japanese / English by GPT-5.5 to match the autho
 
 ## E.2 Other figures in this paper
 
-Figures 2–6 are not AI-generated. Figure 2 (architecture) and Figure 6 (KST mapping) are Mermaid flowcharts authored by the author. Figure 3 (concept graph) is a Mermaid graph rendered from an LLM-constructed concept-graph dataset (the construction procedure itself, described in §3.6, uses LLM judgments — but the figure is a deterministic rendering, not generative output). Figures 4 and 5 are Mermaid summaries of experimental results.
+Figure 1 is the only AI-generated artifact in this paper. The remaining figures and all tables were authored by the author or generated by deterministic code. Figure 2 (architecture) and Figure 5 (KST mapping) are Mermaid flowcharts authored by the author. Figure 3 (concept graph) is a Mermaid graph rendered from an LLM-constructed concept-graph dataset (§3.6 — the construction procedure uses LLM judgments, but the figure itself is a deterministic rendering, not generative output). Figure 4 is a Mermaid summary of experimental results.
