@@ -7,6 +7,10 @@ LLM mathematics tutors exhibit a documented failure mode: when a learner signals
 
 **Keywords:** AI tutoring, LLM mathematics education, knowledge space theory, guided reinvention, control architecture, concept graph, model context protocol
 
+![Lateral movement vs. KST-guided routing](figures/fig0-hook.png)
+
+**Figure 1.** Lateral movement versus KST-guided routing. *Top:* an ungrounded LLM tutor reformulates explanations at the same conceptual depth without locating where the human learner's understanding stops, producing repeated misses (lateral movement). *Bottom:* a KST-guided LLM tutor consults a concept-graph map at each step and traces a path from the human learner's confirmed knowledge through the prerequisite structure to the target understanding (vertical movement). The four-layer control architecture this paper presents is what makes the bottom behavior possible. *Figure generated with OpenAI gpt-image-2 from a textual prompt reproduced in Appendix E.*
+
 ---
 
 # Section 1: Introduction
@@ -56,7 +60,7 @@ graph TB
     style L4 fill:#d4edda,stroke:#28a745
 ```
 
-**Figure 1.** Four-layer control architecture. Layers 1–3 embed in the system prompt as standing constraints. Layer 4 is invoked as an external tool at each conversational turn. Section 3 details each layer.
+**Figure 2.** Four-layer control architecture. Layers 1–3 embed in the system prompt as standing constraints. Layer 4 is invoked as an external tool at each conversational turn. Section 3 details each layer.
 
 ### Paper Organization
 
@@ -167,7 +171,7 @@ Four layers govern how an LLM tutor teaches mathematics — not what it knows, b
 3. **Strategy Few-Shot Layer** — A single behavioral exemplar that activates the target teaching pattern. *Triggers* the teaching style without enumerating rules.
 4. **Concept Map Layer** — The prerequisite graph for the target domain, provided as an external MCP tool (`where_are_we`). Supplies *route calculation* infrastructure.
 
-The architecture is shown schematically in Figure 1 (Section 1). Layers 1–3 were established by the C2 experiment (Section 4.1); Layer 4 was identified as necessary by the Galaxy experiment (Section 4.3), which showed that without a map tool the tutor defaults to a fixed route regardless of knowledge state.
+The architecture is shown schematically in Figure 2 (Section 1). Layers 1–3 were established by the C2 experiment (Section 4.1); Layer 4 was identified as necessary by the Galaxy experiment (Section 4.3), which showed that without a map tool the LLM tutor defaults to a fixed route regardless of the human learner's knowledge state.
 
 ---
 
@@ -321,7 +325,7 @@ graph LR
     style exp_node fill:#ffffcc,stroke:#000,stroke-width:1px,stroke-dasharray:2 3
 ```
 
-**Figure 2.** Concept graph for the correlation coefficient domain. Confidence tier is encoded redundantly by both fill color and border style: core (1.0) in dark green with thick solid border; medium-high (0.9) in light green with thin solid border; mid-band (0.5) in amber with dashed border; fringe (0.4) in pale yellow with dotted border. Core edges (confidence ≥ 0.7) are solid; fringe edges are dashed.
+**Figure 3.** Concept graph for the correlation coefficient domain. Confidence tier is encoded redundantly by both fill color and border style: core (1.0) in dark green with thick solid border; medium-high (0.9) in light green with thin solid border; mid-band (0.5) in amber with dashed border; fringe (0.4) in pale yellow with dotted border. Core edges (confidence ≥ 0.7) are solid; fringe edges are dashed.
 
 The multi-model union captures domain-level consensus; learner-level variation is handled by Layer 2, which specifies which nodes the specific learner has acquired.
 
@@ -560,7 +564,7 @@ The Gemini P-stat finding replicated with a different model family: Full and K-o
 |---|---|---|---|---|---|
 | Covariance reference rate (out of 5) | 5 | 5 | 0 | 0 | 0 |
 
-**Figure 3.** K-effect replication (P-stat). K-containing conditions: 5/5 covariance references; all non-K conditions: 0/5. Pattern held across Gemini and Claude.
+**Figure 4.** K-effect replication (P-stat). K-containing conditions: 5/5 covariance references; all non-K conditions: 0/5. Pattern held across Gemini and Claude.
 
 ### 5.2.3 S/L Few-Shot Experiment (25 Responses)
 
@@ -626,7 +630,7 @@ graph LR
     end
 ```
 
-**Figure 4.** v0 vs. v1 teaching routes (correlation coefficient). v0: all five runs converged on scatter plot; Turn 2 regressed to mean. v1: routes diverged by profile; obstacle detected and re-routed to confident ancestor.
+**Figure 5.** v0 vs. v1 teaching routes (correlation coefficient). v0: all five runs converged on scatter plot; Turn 2 regressed to mean. v1: routes diverged by profile; obstacle detected and re-routed to confident ancestor.
 
 |  | v0 (embedding) | v1 (tool) |
 |--|----------------|-----------|
@@ -678,7 +682,7 @@ graph LR
     L4 --- K4
 ```
 
-**Figure 5.** Four-layer architecture mapped to KST-interpretable roles. The correspondence was identified post-hoc; it provides a theoretical vocabulary for design decisions made on experimental grounds.
+**Figure 6.** Four-layer architecture mapped to KST-interpretable roles. The correspondence was identified post-hoc; it provides a theoretical vocabulary for design decisions made on experimental grounds.
 
 **Layer 1 → decomposition direction.** The discovery-first sequence specifies that traversal builds upward from the frontier of *K* toward the target. Anti-Didactic Inversion, in KST terms, requires that instruction begin at concepts whose prerequisites are all already in *K*.
 
@@ -1562,3 +1566,19 @@ Two responses were classified differently:
 - Formal P1–P4 operationalization as measurable criteria (current rubric provides qualitative descriptions only; P5 is the only level with a reproducible positive criterion)
 - Exact sample breakdown for the 65-response re-classification event (which probes, which conditions)
 - Third-rater validation of the two disagreement cases in §D.4
+
+---
+
+# Appendix E. AI Image Generation Disclosure
+
+Figure 1 was generated with OpenAI gpt-image-2 (released April 2026). The visual concept and the prompt were drafted in interactive sessions with OpenAI GPT-5.5 (via the Codex CLI), based on the lateral-movement / KST-guided-routing contrast described in §1 and §3 of this paper. The rendered image was used as-is, with no editing beyond standard PDF embedding. No semantic content was altered between the gpt-image-2 output and the figure as it appears in this paper.
+
+## E.1 Generation prompt
+
+The prompt was drafted in mixed Japanese / English by GPT-5.5 to match the author's working language. We reproduce here the English equivalent for PDF rendering compatibility; the original mixed-language utterance is preserved verbatim in the project's tracking issue (orangewk/MathDesk #558) and in the repository README.
+
+> A Page 1 hook candidate: a red ungrounded robot tutor cycling through explanation loops in fog, contrasted with a blue KST-guided robot navigator pointing to the next node on a visualized KST map — a two-panel comparison.
+
+## E.2 Other figures in this paper
+
+Figures 2–6 are not AI-generated. Figure 2 (architecture) and Figure 6 (KST mapping) are Mermaid flowcharts authored by the author. Figure 3 (concept graph) is a Mermaid graph rendered from an LLM-constructed concept-graph dataset (the construction procedure itself, described in §3.6, uses LLM judgments — but the figure is a deterministic rendering, not generative output). Figures 4 and 5 are Mermaid summaries of experimental results.
